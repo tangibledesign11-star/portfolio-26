@@ -1,0 +1,48 @@
+---
+title: "A WordPress plugin that turns WordPress into the backend for web applications."
+eyebrow: "[ B2B · Developer tool · Personal project · Beta ]"
+heroImage: "/images/Case Studies/Pottr/Case Study - Pottr Hero.webp"
+heroAlt: "Pottr — Structured backend dashboard inside WordPress"
+role: "Product direction · AI-assisted development"
+websiteUrl: "https://pottr.tangble.com/"
+websiteLabel: "Website"
+
+closingSections:
+  - heading: "Design and implementation"
+    text: "Pottr was designed and built as one continuous product process rather than as a traditional design-to-development handoff. I defined the product model, shaped the user experience, made architectural decisions, implemented the WordPress plugin and admin interface, and used AI-assisted development to explore, generate, debug, and refine the implementation."
+  - heading: "Reflection"
+    text: "Building Pottr changed how I think about product design in infrastructure-heavy products. The challenge was not only to make the interface clear, but to decide which concepts should exist, which behaviors should be constrained, and how the system should communicate its boundaries. Pottr is currently a beta-ready product, with the next stage focused on using it with real applications and learning which parts need to become simpler, more robust, or more broadly useful."
+---
+
+## Contributions
+
+Product direction, product design, UX and UI, information architecture, schema design, technical decisions, WordPress plugin development, admin interface, REST APIs, authentication, webhooks, licensing, documentation, and AI-assisted implementation.
+
+## About
+
+Pottr is a WordPress plugin that turns WordPress into a structured backend for web applications. It provides collections, typed fields, relations, REST APIs, optional app-user authentication, webhooks, API keys, and administrative tooling inside WordPress.
+
+I built Pottr as a one-person product project, working across product strategy, UX, UI, technical decisions, and AI-assisted implementation to explore how WordPress could support application-oriented data without requiring a separate backend service.
+
+## Goals
+
+The goal was to explore whether WordPress could support application-oriented data through a more structured and predictable backend layer.
+
+- Create a structured data layer for application-oriented projects inside WordPress.
+- Make collections, fields, entries, and relations easier to define and consume.
+- Provide predictable REST APIs for frontend applications.
+- Support application users separately from WordPress administrators.
+- Reduce the amount of repeated backend infrastructure developers need to build.
+- Keep hosting, administration, and application data within the WordPress environment.
+- Build a coherent beta product rather than a collection of disconnected technical features.
+
+## Design Considerations
+
+- **Make application data feel different from editorial content.** Pottr needed a clear model for collections and entries instead of relying on WordPress posts and custom fields.
+- **Use the schema as a shared contract.** Field definitions needed to inform validation, storage, API responses, relations, and the admin UI.
+- **Separate backend administration from application usage.** WordPress administrators configure the system, while app users interact with the application through its own authentication model.
+- **Expose complexity progressively.** API keys, JWTs, webhooks, provisioning, and plan limits are powerful but needed clear boundaries and understandable workflows.
+- **Prefer predictable and safe behavior.** Additive provisioning, soft deletion, secret-only routes, and webhook destination validation reduce the risk of destructive or ambiguous operations.
+- **Design and implementation had to evolve together.** The UI could not be finalized independently of schema behavior, validation, authentication, ownership, and API constraints.
+
+> Pottr was built around a simple progression: **Schema → Types → Relations → APIs → UI → Templates.** The intention was to make the underlying model consistent across the product, so that defining data, managing it, and consuming it through an application all followed the same logic.

@@ -1,0 +1,162 @@
+---
+interface Props {
+	class?: string;
+	roles?: string[];
+}
+
+const {
+	class: className = '',
+	roles = ['✦ Product Designer', '✦ Design Engineer'],
+} = Astro.props;
+
+const role1 = roles[0] || '✦ Product Designer';
+const role2 = roles[1] || '✦ Design Engineer';
+---
+
+<div
+	class={`role-pill ${className}`.trim()}
+	role="status"
+	aria-live="polite"
+	aria-label={`Roles: ${role1.replace('✦ ', '')}, ${role2.replace('✦ ', '')}`}
+>
+	<div class="role-pill-viewport">
+		<!-- Active rotating labels -->
+		<span class="role-label role-label-1">{role1}</span>
+		<span class="role-label role-label-2" aria-hidden="true">{role2}</span>
+		<!-- Hidden sizer element prevents layout shift by matching the widest label -->
+		<span class="role-sizer" aria-hidden="true">{role1}</span>
+	</div>
+</div>
+
+<style>
+	.role-pill {
+		display: inline-flex;
+		align-items: center;
+		background-color: var(--color-bg, #060606);
+		border: 0.5px solid #ffffff;
+		border-radius: 9999px;
+		padding: 4px 8px;
+		color: #ffffff;
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 1.2;
+		user-select: none;
+		box-sizing: border-box;
+		width: fit-content;
+	}
+
+	.role-pill-viewport {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		overflow: hidden;
+		height: 18px;
+	}
+
+	.role-sizer {
+		visibility: hidden;
+		pointer-events: none;
+		white-space: nowrap;
+		height: 0;
+	}
+
+	.role-label {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		display: inline-flex;
+		align-items: center;
+		white-space: nowrap;
+		will-change: transform, opacity;
+	}
+
+	/* --------------------------------------------------
+	 * 6-second total cycle (3s for role 1, 3s for role 2)
+	 * Easing: cubic-bezier(0.16, 1, 0.3, 1) for smooth,
+	 * expressive motion.
+	 * -------------------------------------------------- */
+	.role-label-1 {
+		animation: rotateUp1 6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+	}
+
+	.role-label-2 {
+		animation: rotateUp2 6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+	}
+
+	@keyframes rotateUp1 {
+		0%, 45% {
+			transform: translateY(0%);
+			opacity: 1;
+		}
+		50%, 95% {
+			transform: translateY(-120%);
+			opacity: 0;
+		}
+		96% {
+			transform: translateY(120%);
+			opacity: 0;
+		}
+		100% {
+			transform: translateY(0%);
+			opacity: 1;
+		}
+	}
+
+	@keyframes rotateUp2 {
+		0%, 45% {
+			transform: translateY(120%);
+			opacity: 0;
+		}
+		50%, 95% {
+			transform: translateY(0%);
+			opacity: 1;
+		}
+		100% {
+			transform: translateY(-120%);
+			opacity: 0;
+		}
+	}
+
+	/* --------------------------------------------------
+	 * Accessible Prefers-Reduced-Motion
+	 * Fades without movement to avoid vestibular triggers
+	 * -------------------------------------------------- */
+	@media (prefers-reduced-motion: reduce) {
+		.role-label {
+			transform: none !important;
+		}
+
+		.role-label-1 {
+			animation: fadeSwitch1 6s steps(1) infinite;
+		}
+
+		.role-label-2 {
+			animation: fadeSwitch2 6s steps(1) infinite;
+		}
+	}
+
+	@keyframes fadeSwitch1 {
+		0%, 49.9% {
+			opacity: 1;
+			visibility: visible;
+		}
+		50%, 100% {
+			opacity: 0;
+			visibility: hidden;
+		}
+	}
+
+	@keyframes fadeSwitch2 {
+		0%, 49.9% {
+			opacity: 0;
+			visibility: hidden;
+		}
+		50%, 100% {
+			opacity: 1;
+			visibility: visible;
+		}
+	}
+</style>

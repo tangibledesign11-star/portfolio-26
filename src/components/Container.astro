@@ -1,0 +1,12 @@
+---
+interface Props {
+	class?: string;
+	grid12?: boolean;
+}
+
+const { class: className = '', grid12 = false } = Astro.props;
+---
+
+<div class={`layout-container ${grid12 ? 'grid-12' : ''} ${className}`.trim()}>
+	<slot />
+</div>

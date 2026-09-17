@@ -1,0 +1,157 @@
+---
+interface Props {
+	class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<section class={`case-study-details-section ${className}`.trim()}>
+	<div class="case-study-details-container">
+		<slot />
+	</div>
+</section>
+
+<style>
+	/* --------------------------------------------------
+	 * Project Details Section Container
+	 * Centered 768px fixed max width, left-aligned content
+	 * -------------------------------------------------- */
+	.case-study-details-section {
+		width: 100%;
+		padding: 0 80px 100px 80px;
+		background-color: var(--color-bg, #060606);
+		box-sizing: border-box;
+	}
+
+	.case-study-details-container {
+		width: 100%;
+		max-width: 768px;
+		margin: 0 auto;
+		display: flex;
+		flex-direction: column;
+		text-align: left;
+	}
+
+	/* --------------------------------------------------
+	 * Section Labels (Contributions, About, Goals, etc.)
+	 * Neutral gray (#737373), 18px, weight 500, line-height 1.4
+	 * 16px gap to content below, 40px gap between content groups
+	 * -------------------------------------------------- */
+	.case-study-details-container :global(h2),
+	.case-study-details-container :global(h3) {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 18px;
+		font-weight: 500;
+		line-height: 1.4;
+		color: #737373;
+		margin: 40px 0 16px 0;
+		letter-spacing: -0.01em;
+	}
+
+	.case-study-details-container :global(h2:first-child),
+	.case-study-details-container :global(h3:first-child) {
+		margin-top: 0;
+	}
+
+	/* --------------------------------------------------
+	 * Body Content
+	 * White text, 20px, regular weight (400), line-height ~1.45–1.5
+	 * 16px gap between multiple paragraphs in the same group
+	 * -------------------------------------------------- */
+	.case-study-details-container :global(p) {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 20px;
+		font-weight: 400;
+		line-height: 1.48;
+		color: #ffffff;
+		margin: 0 0 16px 0;
+		letter-spacing: -0.01em;
+	}
+
+	.case-study-details-container :global(p:last-child) {
+		margin-bottom: 0;
+	}
+
+	/* --------------------------------------------------
+	 * Design Considerations Bullet List
+	 * Standard readable list spacing (10px gap between items)
+	 * 16px gap from label above, 40px gap to block below
+	 * -------------------------------------------------- */
+	.case-study-details-container :global(ul) {
+		list-style: disc;
+		margin: 0 0 40px 0;
+		padding-left: 24px;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.case-study-details-container :global(li) {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 20px;
+		font-weight: 400;
+		line-height: 1.48;
+		color: #ffffff;
+		letter-spacing: -0.01em;
+		padding-left: 4px;
+	}
+
+	.case-study-details-container :global(li::marker) {
+		color: #ffffff;
+	}
+
+	/* --------------------------------------------------
+	 * Closing Contribution Statement (Blockquote)
+	 * Vertical subtle white border on left, 24px padding-left,
+	 * no quotation marks, white text, 20px
+	 * -------------------------------------------------- */
+	.case-study-details-container :global(blockquote) {
+		margin: 40px 0 0 0;
+		padding: 0 0 0 24px;
+		border-left: 2px solid #ffffff;
+	}
+
+	.case-study-details-container :global(blockquote p) {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 20px;
+		font-weight: 400;
+		line-height: 1.48;
+		color: #ffffff;
+		margin: 0;
+		letter-spacing: -0.01em;
+		quotes: none;
+	}
+
+	.case-study-details-container :global(blockquote p::before),
+	.case-study-details-container :global(blockquote p::after) {
+		content: none;
+	}
+
+	/* --------------------------------------------------
+	 * Responsive Reflow
+	 * -------------------------------------------------- */
+	@media (max-width: 768px) {
+		.case-study-details-section {
+			padding: 0 20px 60px 20px;
+		}
+
+		.case-study-details-container :global(p),
+		.case-study-details-container :global(li),
+		.case-study-details-container :global(blockquote p) {
+			font-size: 18px;
+			line-height: 1.55;
+		}
+
+		.case-study-details-container :global(h2),
+		.case-study-details-container :global(h3) {
+			font-size: 16px;
+			margin-top: 32px;
+		}
+
+		.case-study-details-container :global(blockquote) {
+			margin-top: 32px;
+			padding-left: 18px;
+		}
+	}
+</style>

@@ -1,0 +1,329 @@
+---
+import Section from './Section.astro';
+import Container from './Container.astro';
+import Button from './Button.astro';
+import { projects } from '../data/projects';
+---
+
+<Section id="selected-work" bordered={true} class="selected-work-section">
+	<Container>
+		<div class="selected-work-layout">
+			<!-- Row 1: Section Introduction -->
+			<div class="intro-row">
+				<div class="intro-left">
+					<p class="text-eyebrow intro-eyebrow">Most recent → previous</p>
+					<h2 class="text-h2 intro-title">Selected Work</h2>
+				</div>
+				<div class="intro-right">
+					<p class="intro-description">
+						A few things shaped through design, experimentation, and the process of making them real.
+					</p>
+				</div>
+			</div>
+
+			<!-- Row 2: Work Grid (2-column layout) -->
+			<div class="work-grid">
+				{/* Cards 1 to 5: Standard Project Cards */}
+				{
+					projects.map((project) => (
+						<article class="project-card">
+							<div class="card-media">
+								<img
+									src={project.image}
+									alt={project.alt}
+									width="1260"
+									height="756"
+									loading="lazy"
+									decoding="async"
+									class="card-image"
+								/>
+							</div>
+							<div class="card-body">
+								<div class="card-info">
+									<p class="card-meta">[ {project.meta} ]</p>
+									<p class="card-description">{project.description}</p>
+									<p class="card-direction">{project.direction}</p>
+								</div>
+								<div class="card-action">
+									<Button variant="outlined" href={project.href} class="project-btn">
+										View Project
+									</Button>
+								</div>
+							</div>
+						</article>
+					))
+				}
+
+				{/* Card 6: Good product work CTA Card */}
+				<article class="project-card cta-card">
+					<div class="card-media">
+						<img
+							src="/images/CTA.webp"
+							alt="Intentionality, Curiosity, Craft principles"
+							width="1260"
+							height="756"
+							loading="lazy"
+							decoding="async"
+							class="card-image"
+						/>
+					</div>
+					<div class="card-body cta-card-body">
+						<div class="card-info cta-info">
+							<p class="card-description cta-title">
+								Good product work needs clear thinking, meaningful ownership, and careful execution.
+							</p>
+							<p class="cta-support">
+								Open to working with teams and people who value clear thinking, meaningful ownership, and well-made digital products.
+							</p>
+						</div>
+						<div class="card-action cta-action">
+							<Button variant="primary" href="mailto:pushkars919@gmail.com" class="cta-btn">
+								Get in touch
+							</Button>
+						</div>
+					</div>
+				</article>
+			</div>
+		</div>
+	</Container>
+</Section>
+
+<style>
+	/* --------------------------------------------------
+	 * Selected Work Layout Structure
+	 * Exact 56px vertical gap between Row 1 and Row 2
+	 * -------------------------------------------------- */
+	.selected-work-layout {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		gap: 56px; /* Exact gap between Row 1 and Row 2 */
+	}
+
+	/* --------------------------------------------------
+	 * Row 1: Section Introduction
+	 * 12-column grid, horizontal desktop composition
+	 * -------------------------------------------------- */
+	.intro-row {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: 24px;
+		align-items: flex-end;
+		width: 100%;
+	}
+
+	.intro-left {
+		grid-column: 1 / 7;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.intro-eyebrow {
+		margin: 0 0 16px 0;
+	}
+
+	.intro-title {
+		margin: 0;
+		color: #ffffff;
+	}
+
+	.intro-right {
+		grid-column: 7 / 13;
+		display: flex;
+		align-items: flex-end;
+		padding-bottom: 6px;
+	}
+
+	.intro-description {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 18px;
+		line-height: 1.55;
+		color: #a3a3a3;
+		max-width: 480px;
+		margin: 0;
+		letter-spacing: -0.01em;
+	}
+
+	/* --------------------------------------------------
+	 * Row 2: Work Grid
+	 * Exactly two columns with:
+	 * 20px gap between adjacent cards in the same row
+	 * 56px gap between card rows
+	 * -------------------------------------------------- */
+	.work-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		column-gap: 20px; /* Exact 20px gap between adjacent cards */
+		row-gap: 56px;    /* Exact 56px gap between card rows */
+		width: 100%;
+	}
+
+	/* --------------------------------------------------
+	 * Project Cards
+	 * No outer card box, border, or background
+	 * -------------------------------------------------- */
+	.project-card {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		min-width: 0;
+	}
+
+	.card-media {
+		width: 100%;
+		overflow: hidden;
+		border-radius: 8px; /* Clean corner radius matching reference */
+		background-color: #121212;
+	}
+
+	.card-image {
+		width: 100%;
+		height: auto;
+		aspect-ratio: 5 / 3;
+		object-fit: cover;
+		display: block;
+		border-radius: 8px;
+	}
+
+	/* --------------------------------------------------
+	 * Card Content Below Image
+	 * -------------------------------------------------- */
+	.card-body {
+		margin-top: 20px;
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 24px;
+		width: 100%;
+		min-width: 0;
+	}
+
+	.card-info {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		flex: 1 1 auto;
+		min-width: 0;
+	}
+
+	.card-meta {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 1.4;
+		color: #a3a3a3;
+		letter-spacing: -0.01em;
+		margin: 0 0 10px 0;
+	}
+
+	.card-description {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 18px;
+		font-weight: 500;
+		line-height: 1.45;
+		color: #ffffff;
+		letter-spacing: -0.015em;
+		margin: 0 0 10px 0;
+	}
+
+	.card-direction {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 1.4;
+		color: #737373;
+		letter-spacing: -0.01em;
+		margin: 0;
+	}
+
+	.card-action {
+		flex-shrink: 0;
+		padding-top: 2px;
+	}
+
+	/* Compact "View Project" button */
+	:global(.project-btn) {
+		font-size: 14px !important;
+		padding: 7px 16px !important;
+		white-space: nowrap !important;
+	}
+
+	/* --------------------------------------------------
+	 * Card 6: CTA Card Special Treatment
+	 * -------------------------------------------------- */
+	.cta-card-body {
+		align-items: center; /* Vertically centered action button per screenshot */
+	}
+
+	.cta-title {
+		font-size: 18px;
+		font-weight: 500;
+		line-height: 1.45;
+		color: #ffffff;
+		margin: 0 0 8px 0;
+	}
+
+	.cta-support {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 1.5;
+		color: #a3a3a3;
+		margin: 0;
+		letter-spacing: -0.01em;
+	}
+
+	.cta-action {
+		padding-top: 0;
+	}
+
+	:global(.cta-btn) {
+		font-size: 15px !important;
+		padding: 9px 18px !important;
+		white-space: nowrap !important;
+	}
+
+	/* --------------------------------------------------
+	 * Responsive Behavior
+	 * -------------------------------------------------- */
+	@media (max-width: 992px) {
+		.intro-row {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 20px;
+		}
+
+		.intro-right {
+			padding-bottom: 0;
+		}
+
+		.intro-description {
+			max-width: 100%;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.selected-work-layout {
+			gap: 40px;
+		}
+
+		.work-grid {
+			grid-template-columns: 1fr;
+			row-gap: 48px;
+		}
+
+		.card-body {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 16px;
+		}
+
+		.cta-card-body {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 16px;
+		}
+	}
+</style>

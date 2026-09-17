@@ -1,0 +1,254 @@
+---
+import Section from './Section.astro';
+import Container from './Container.astro';
+import Button from './Button.astro';
+import { projects } from '../data/projects';
+
+interface Props {
+	currentSlug: string;
+	class?: string;
+}
+
+const { currentSlug, class: className = '' } = Astro.props;
+
+// Filter out the current project and show only the first two remaining projects
+const upNextProjects = projects
+	.filter((project) => project.slug !== currentSlug)
+	.slice(0, 2);
+---
+
+<Section bordered={true} class={`up-next-section ${className}`.trim()}>
+	<Container>
+		<div class="up-next-layout">
+			<!-- Row 1: Section Introduction -->
+			<div class="intro-row">
+				<div class="intro-left">
+					<h2 class="text-h2 intro-title">Up next</h2>
+				</div>
+				<div class="intro-right">
+					<p class="intro-description">
+						A few things shaped through design, experimentation, and the process of making them real.
+					</p>
+				</div>
+			</div>
+
+			<!-- Row 2: 2-Card Work Grid -->
+			<div class="work-grid">
+				{
+					upNextProjects.map((project) => (
+						<article class="project-card">
+							<div class="card-media">
+								<img
+									src={project.image}
+									alt={project.alt}
+									width="1260"
+									height="756"
+									loading="lazy"
+									decoding="async"
+									class="card-image"
+								/>
+							</div>
+							<div class="card-body">
+								<div class="card-info">
+									<p class="card-meta">[ {project.meta} ]</p>
+									<p class="card-description">{project.description}</p>
+									<p class="card-direction">{project.direction}</p>
+								</div>
+								<div class="card-action">
+									<Button variant="outlined" href={project.href} class="project-btn">
+										View Project
+									</Button>
+								</div>
+							</div>
+						</article>
+					))
+				}
+			</div>
+		</div>
+	</Container>
+</Section>
+
+<style>
+	/* --------------------------------------------------
+	 * Up Next Section Layout
+	 * 56px vertical gap between Header and Grid
+	 * -------------------------------------------------- */
+	.up-next-layout {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		gap: 56px;
+	}
+
+	/* --------------------------------------------------
+	 * Row 1: Header (12-column grid)
+	 * -------------------------------------------------- */
+	.intro-row {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: 24px;
+		align-items: flex-end;
+		width: 100%;
+	}
+
+	.intro-left {
+		grid-column: 1 / 7;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.intro-title {
+		margin: 0;
+		color: #ffffff;
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+	}
+
+	.intro-right {
+		grid-column: 7 / 13;
+		display: flex;
+		align-items: flex-end;
+		padding-bottom: 6px;
+	}
+
+	.intro-description {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 18px;
+		line-height: 1.55;
+		color: #a3a3a3;
+		max-width: 480px;
+		margin: 0;
+		letter-spacing: -0.01em;
+	}
+
+	/* --------------------------------------------------
+	 * Row 2: 2-Column Work Grid
+	 * 20px horizontal gap between cards
+	 * -------------------------------------------------- */
+	.work-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		column-gap: 20px;
+		row-gap: 56px;
+		width: 100%;
+	}
+
+	.project-card {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		min-width: 0;
+	}
+
+	.card-media {
+		width: 100%;
+		overflow: hidden;
+		border-radius: 8px;
+		background-color: #121212;
+	}
+
+	.card-image {
+		width: 100%;
+		height: auto;
+		aspect-ratio: 5 / 3;
+		object-fit: cover;
+		display: block;
+		border-radius: 8px;
+	}
+
+	.card-body {
+		margin-top: 20px;
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 24px;
+		width: 100%;
+		min-width: 0;
+	}
+
+	.card-info {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		flex: 1 1 auto;
+		min-width: 0;
+	}
+
+	.card-meta {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 1.4;
+		color: #a3a3a3;
+		letter-spacing: -0.01em;
+		margin: 0 0 10px 0;
+	}
+
+	.card-description {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 18px;
+		font-weight: 500;
+		line-height: 1.45;
+		color: #ffffff;
+		letter-spacing: -0.015em;
+		margin: 0 0 10px 0;
+	}
+
+	.card-direction {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 1.4;
+		color: #737373;
+		letter-spacing: -0.01em;
+		margin: 0;
+	}
+
+	.card-action {
+		flex-shrink: 0;
+		padding-top: 2px;
+	}
+
+	:global(.project-btn) {
+		font-size: 14px !important;
+		padding: 7px 16px !important;
+		white-space: nowrap !important;
+	}
+
+	/* --------------------------------------------------
+	 * Responsive Reflow
+	 * -------------------------------------------------- */
+	@media (max-width: 992px) {
+		.intro-row {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 20px;
+		}
+
+		.intro-right {
+			padding-bottom: 0;
+		}
+
+		.intro-description {
+			max-width: 100%;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.up-next-layout {
+			gap: 40px;
+		}
+
+		.work-grid {
+			grid-template-columns: 1fr;
+			row-gap: 48px;
+		}
+
+		.card-body {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 16px;
+		}
+	}
+</style>

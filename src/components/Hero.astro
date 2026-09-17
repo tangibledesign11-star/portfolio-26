@@ -1,0 +1,289 @@
+---
+import Section from './Section.astro';
+import Container from './Container.astro';
+import Button from './Button.astro';
+import RolePill from './RolePill.astro';
+
+interface Props {
+	class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<Section bordered={true} class={`hero-section ${className}`.trim()}>
+	<Container>
+		<div class="hero-layout">
+			<!-- Row 1: Main content (strictly columns 1–8 on desktop) -->
+			<div class="hero-row-1">
+				<div class="hero-content">
+					<p class="text-eyebrow hero-eyebrow">Design • Build • Ship</p>
+
+					<h1 class="text-h1 hero-title">
+						Designing experiences<br class="hidden sm:inline" />
+						beyond screens.
+					</h1>
+
+					<p class="hero-description">
+						I’m a product designer who works across design and implementation, shaping digital products through thoughtful decisions and practical making — from early ideas to useful, working outcomes.
+					</p>
+
+					<div class="hero-actions">
+						<Button variant="primary" href="mailto:pushkars919@gmail.com">
+							Get in touch
+						</Button>
+						<Button variant="outlined" href="#selected-work">
+							View Work
+						</Button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Row 2: Shared horizontal row (Role pill bottom-left, Profile block columns 9–12) -->
+			<div class="hero-row-2">
+				<!-- Left item: Role pill (bottom-left) -->
+				<div class="hero-role-pill-container">
+					<RolePill />
+				</div>
+
+				<!-- Right item: Profile block (strictly right-side 4 columns, columns 9–12) -->
+				<div class="hero-profile-block">
+					<div class="profile-card">
+						<img
+							src="/images/Pushkar-Saraf.webp"
+							alt="Pushkar Saraf"
+							width="315"
+							height="224"
+							loading="eager"
+							fetchpriority="high"
+							class="profile-image"
+						/>
+						<div class="profile-metadata">
+							<span class="meta-name">Pushkar Saraf</span>
+							<span class="meta-location">Kolhapur • India</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</Container>
+</Section>
+
+<style>
+	/* --------------------------------------------------
+	 * Hero Layout: Two Explicit Rows
+	 * Row 1: Main content (Columns 1–8)
+	 * Row 2: Shared horizontal row (Role pill + 4-col Profile block)
+	 * -------------------------------------------------- */
+	.hero-layout {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		gap: 48px; /* Intentional vertical space between Row 1 and Row 2 */
+	}
+
+	/* --------------------------------------------------
+	 * Row 1: Main Content
+	 * Occupies the first 8 columns of the 12-column grid
+	 * -------------------------------------------------- */
+	.hero-row-1 {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: 24px;
+		width: 100%;
+		min-width: 0;
+	}
+
+	.hero-content {
+		grid-column: 1 / 9;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		width: 100%;
+		min-width: 0;
+	}
+
+	.hero-eyebrow {
+		margin: 0 0 24px 0;
+	}
+
+	.hero-title {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: clamp(38px, 5.8vw, 82px);
+		font-weight: 500;
+		line-height: 1.05;
+		letter-spacing: -0.02em;
+		color: #ffffff;
+		margin: 0 0 28px 0;
+	}
+
+	.hero-description {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 18px;
+		line-height: 1.6;
+		color: #a3a3a3;
+		max-width: 560px;
+		margin: 0 0 36px 0;
+	}
+
+	.hero-actions {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		flex-wrap: wrap;
+	}
+
+	/* --------------------------------------------------
+	 * Row 2: Shared Horizontal Row
+	 * Spans full width of the 12-column grid
+	 * Left item: Role pill (Columns 1–8, bottom-left)
+	 * Right item: Profile block (Columns 9–12, extreme right)
+	 * Both aligned to the bottom boundary of the hero
+	 * -------------------------------------------------- */
+	.hero-row-2 {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: 24px;
+		align-items: flex-end; /* Aligns role pill and profile metadata to the exact same bottom baseline */
+		width: 100%;
+		min-width: 0;
+	}
+
+	/* Left Item: Role Pill */
+	.hero-role-pill-container {
+		grid-column: 1 / 9;
+		display: flex;
+		align-items: flex-end;
+		justify-content: flex-start;
+		min-width: 0;
+	}
+
+	/* Right Item: Profile Block (strictly constrained to columns 9–12) */
+	.hero-profile-block {
+		grid-column: 9 / 13;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end; /* Anchors the card to the extreme right */
+		width: 100%;
+		min-width: 0;
+	}
+
+	.profile-card {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		width: fit-content;
+		max-width: 100%;
+	}
+
+	/* 1.4:1 aspect ratio (315x224) per user specification */
+	.profile-image {
+		width: 315px;
+		height: 224px;
+		aspect-ratio: 1.4 / 1;
+		max-width: 100%;
+		display: block;
+		border-radius: 4px;
+		object-fit: cover;
+		object-position: center;
+	}
+
+	.profile-metadata {
+		margin-top: 16px; /* Exactly 16px vertical gap below image */
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		width: 100%;
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 14px;
+		font-weight: 500;
+		color: #ffffff; /* Both texts are white */
+		letter-spacing: -0.01em;
+		box-sizing: border-box;
+	}
+
+	.meta-name,
+	.meta-location {
+		white-space: nowrap;
+		color: #ffffff;
+	}
+
+	/* --------------------------------------------------
+	 * Responsive Behavior
+	 * Preserves the 8/4 grid down to 768px.
+	 * At 768px and below, stacks cleanly without full-width blowout.
+	 * -------------------------------------------------- */
+	@media (max-width: 768px) {
+		.hero-layout {
+			gap: 32px;
+		}
+
+		.hero-row-1 {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.hero-content {
+			width: 100%;
+		}
+
+		.hero-eyebrow {
+			margin-bottom: 16px;
+		}
+
+		.hero-title {
+			margin-bottom: 20px;
+		}
+
+		.hero-description {
+			font-size: 16px;
+			line-height: 1.55;
+			margin-bottom: 28px;
+		}
+
+		.hero-actions {
+			gap: 12px;
+		}
+
+		.hero-row-2 {
+			display: flex;
+			flex-direction: column;
+			gap: 0;
+			align-items: flex-start;
+			width: 100%;
+		}
+
+		.hero-profile-block {
+			order: 1;
+			width: 100%;
+			align-items: stretch;
+		}
+
+		.profile-card {
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.profile-image {
+			width: 100%;
+			height: auto;
+			aspect-ratio: 1.4 / 1;
+			object-fit: cover;
+			object-position: center;
+			border-radius: 4px;
+		}
+
+		.profile-metadata {
+			margin-top: 16px;
+		}
+
+		.hero-role-pill-container {
+			order: 2;
+			width: 100%;
+			margin-top: 16px;
+			display: flex;
+			align-items: flex-start;
+			justify-content: flex-start;
+		}
+	}
+</style>

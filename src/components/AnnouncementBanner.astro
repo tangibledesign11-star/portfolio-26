@@ -1,0 +1,270 @@
+---
+interface Props {
+	class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<aside
+	class={`banner-wrapper ${className}`.trim()}
+	id="announcement-banner-wrapper"
+	role="region"
+	aria-label="Announcement"
+>
+	<a
+		href="/resume/Pushkar_Saraf_Senior_Product_Designer_2026.pdf"
+		download="Pushkar_Saraf_Senior_Product_Designer_2026.pdf"
+		class="banner-container"
+		id="announcement-banner"
+		aria-label="Open to remote opportunities within the IST timezone. Click to download resume."
+	>
+		<div class="banner-content">
+			<span class="banner-symbol" aria-hidden="true">☞</span>
+			<span class="banner-text banner-text-desktop">Open to remote opportunities within the IST timezone.</span>
+			<span class="banner-text banner-text-mobile">
+				<span class="banner-line">Open to remote opportunities</span>
+				<span class="banner-line">Work from anywhere · IST timezone.</span>
+			</span>
+			<span class="banner-symbol" aria-hidden="true">☜</span>
+		</div>
+	</a>
+</aside>
+
+<noscript>
+	<style>
+		#announcement-banner-wrapper {
+			height: 56px !important;
+		}
+		#announcement-banner {
+			transform: translateY(0) !important;
+		}
+	</style>
+</noscript>
+
+<script>
+	function initBannerEntrance() {
+		const wrapper = document.getElementById('announcement-banner-wrapper');
+		const banner = document.getElementById('announcement-banner');
+		if (!wrapper || !banner) return;
+
+		// Respect prefers-reduced-motion: show immediately without push animation
+		const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		if (prefersReduced) {
+			wrapper.classList.add('is-entered-no-motion');
+			banner.classList.add('is-entered-no-motion');
+			return;
+		}
+
+		// After 2-second delay, expand wrapper height to 56px and slide banner in, smoothly pushing page content
+		setTimeout(() => {
+			wrapper.classList.add('is-entered');
+			banner.classList.add('is-entered');
+		}, 2000);
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initBannerEntrance);
+	} else {
+		initBannerEntrance();
+	}
+
+	document.addEventListener('astro:page-load', initBannerEntrance);
+</script>
+
+<style>
+	/* --------------------------------------------------
+	 * Expanding Flow Container
+	 * Starts at height: 0 so no empty space is reserved.
+	 * Expands to 56px after 2 seconds, smoothly pushing the content down.
+	 * -------------------------------------------------- */
+	.banner-wrapper {
+		width: 100%;
+		height: 0;
+		overflow: hidden;
+		background-color: transparent;
+		transition: height 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+		will-change: height;
+	}
+
+	.banner-wrapper.is-entered {
+		height: 56px;
+	}
+
+	.banner-wrapper.is-entered-no-motion {
+		height: 56px;
+		transition: none !important;
+	}
+
+	/* --------------------------------------------------
+	 * Sliding Banner Container (56px height)
+	 * -------------------------------------------------- */
+	.banner-container {
+		background-color: var(--color-banner, #D64B2D);
+		height: 56px;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding-left: 20px;
+		padding-right: 20px;
+		box-sizing: border-box;
+		transform: translateY(-100%);
+		transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+		will-change: transform;
+		cursor: pointer;
+		user-select: none;
+		text-decoration: none;
+	}
+
+	.banner-container:hover {
+		background-color: #e05334;
+	}
+
+	.banner-container:focus-visible {
+		outline: 2px solid #ffffff;
+		outline-offset: -2px;
+	}
+
+	.banner-container.is-entered {
+		transform: translateY(0);
+	}
+
+	.banner-container.is-entered-no-motion {
+		transform: translateY(0);
+		transition: none !important;
+	}
+
+	/* --------------------------------------------------
+	 * Content & Gap: Exactly 16px between symbols and text
+	 * -------------------------------------------------- */
+	.banner-content {
+		width: 100%;
+		max-width: var(--max-content-width, 1280px);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 16px;
+		text-align: center;
+		color: #ffffff;
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 1;
+	}
+
+	.banner-symbol {
+		font-size: 18px;
+		line-height: 1;
+		user-select: none;
+		display: inline-flex;
+		align-items: center;
+	}
+
+	.banner-text {
+		letter-spacing: -0.01em;
+		background: linear-gradient(
+			105deg,
+			#ffffff 0%,
+			#ffffff 30%,
+			#e08b79 50%,
+			#ffffff 70%,
+			#ffffff 100%
+		);
+		background-size: 200% 100%;
+		-webkit-background-clip: text;
+		background-clip: text;
+		-webkit-text-fill-color: transparent;
+		animation: textShimmer 4s ease-in-out infinite;
+	}
+
+	.banner-text-desktop {
+		display: inline;
+	}
+
+	.banner-text-mobile {
+		display: none;
+	}
+
+	@keyframes textShimmer {
+		0% {
+			background-position: 100% 0;
+		}
+		100% {
+			background-position: -100% 0;
+		}
+	}
+
+	/* --------------------------------------------------
+	 * Mobile Responsive Layout
+	 * -------------------------------------------------- */
+	@media (max-width: 768px) {
+		.banner-container {
+			padding-left: 12px;
+			padding-right: 12px;
+		}
+
+		.banner-content {
+			gap: 10px;
+		}
+
+		.banner-text-desktop {
+			display: none;
+		}
+
+		.banner-text-mobile {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+			font-size: 13px;
+			line-height: 1.35;
+		}
+
+		.banner-line {
+			white-space: nowrap;
+		}
+
+		.banner-symbol {
+			font-size: 16px;
+		}
+	}
+
+	@media (max-width: 360px) {
+		.banner-content {
+			gap: 6px;
+		}
+
+		.banner-text-mobile {
+			font-size: 11.5px;
+			line-height: 1.3;
+		}
+
+		.banner-symbol {
+			font-size: 14px;
+		}
+	}
+
+	/* --------------------------------------------------
+	 * Accessible Prefers-Reduced-Motion
+	 * -------------------------------------------------- */
+	@media (prefers-reduced-motion: reduce) {
+		.banner-wrapper {
+			height: 56px !important;
+			transition: none !important;
+		}
+
+		.banner-container {
+			transform: translateY(0) !important;
+			transition: none !important;
+		}
+
+		.banner-text {
+			background: none !important;
+			-webkit-text-fill-color: #ffffff !important;
+			color: #ffffff !important;
+			animation: none !important;
+		}
+	}
+</style>

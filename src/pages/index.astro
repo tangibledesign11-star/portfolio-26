@@ -1,0 +1,37 @@
+---
+import RootLayout from '../layouts/RootLayout.astro';
+import AnnouncementBanner from '../components/AnnouncementBanner.astro';
+import Navigation from '../components/Navigation.astro';
+import Hero from '../components/Hero.astro';
+import SelectedWork from '../components/SelectedWork.astro';
+import Recommendations from '../components/Recommendations.astro';
+import Philosophy from '../components/Philosophy.astro';
+import DesignChallenges from '../components/DesignChallenges.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<RootLayout title="Pushkar Saraf — Product Designer">
+	<!-- Announcement Banner -->
+	<AnnouncementBanner slot="banner" />
+
+	<!-- Navigation Bar -->
+	<Navigation slot="nav" />
+
+	<!-- Hero Section (First row 8 cols + Second row 4 cols + Rotating Role Pill) -->
+	<Hero />
+
+	<!-- Selected Work Section -->
+	<SelectedWork />
+
+	<!-- Recommendations Section -->
+	<Recommendations />
+
+	<!-- Work Philosophy Section -->
+	<Philosophy />
+
+	<!-- Design Challenges Section -->
+	<DesignChallenges />
+
+	<!-- Footer / Contact Section -->
+	<Footer slot="footer" />
+</RootLayout>

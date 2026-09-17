@@ -1,0 +1,351 @@
+---
+import Section from './Section.astro';
+import Container from './Container.astro';
+import Button from './Button.astro';
+
+interface Props {
+	class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+const socialLinks = [
+	{ label: 'LinkedIn', href: '#' },
+	{ label: 'Behance', href: '#' },
+	{ label: 'Instagram', href: '#' },
+];
+
+const timeFormatter = new Intl.DateTimeFormat('en-US', {
+	timeZone: 'Asia/Kolkata',
+	hour: 'numeric',
+	minute: '2-digit',
+	second: '2-digit',
+	hour12: true,
+});
+
+const dateFormatter = new Intl.DateTimeFormat('en-GB', {
+	timeZone: 'Asia/Kolkata',
+	weekday: 'long',
+	day: 'numeric',
+	month: 'long',
+	year: 'numeric',
+});
+
+const now = new Date();
+const initialTime = timeFormatter.format(now);
+const initialDate = dateFormatter.format(now);
+---
+
+<Section id="contact" bordered={true} class={`footer-section ${className}`.trim()}>
+	<Container>
+		<div class="footer-layout">
+			<!-- Top Row: Statement & Resume CTA -->
+			<div class="footer-top-row">
+				<p class="contact-statement">
+					Want to get in touch regarding a new project or role? <span class="accent-text">Reach out.</span>
+				</p>
+				<div class="footer-action">
+					<Button
+						variant="primary"
+						href="/resume/Pushkar_Saraf_Senior_Product_Designer_2026.pdf"
+						download="Pushkar_Saraf_Senior_Product_Designer_2026.pdf"
+					>
+						Download Resume
+					</Button>
+				</div>
+			</div>
+
+			<!-- Prominent Display Email Heading -->
+			<div class="footer-email-container">
+				<a href="mailto:pushkars919@gmail.com" class="footer-email">
+					pushkars919@gmail.com
+				</a>
+			</div>
+
+			<!-- Bottom Information Row (Three Columns) -->
+			<div class="footer-info-row">
+				<!-- Column 1: Response Time -->
+				<div class="info-col info-col-1">
+					<h3 class="info-heading">Response time</h3>
+					<p class="info-detail">Within 1 hour</p>
+				</div>
+
+				<!-- Column 2: Contact Details -->
+				<div class="info-col info-col-2">
+					<h3 class="info-heading">Contact</h3>
+					<div class="detail-list">
+						<a href="mailto:pushkars919@gmail.com" class="info-link">
+							pushkars919@gmail.com
+						</a>
+						<a href="tel:+918983606202" class="info-link">
+							+91 8983606202
+						</a>
+					</div>
+				</div>
+
+				<!-- Column 3: Social Links -->
+				<div class="info-col info-col-3">
+					<h3 class="info-heading">Social</h3>
+					<div class="detail-list">
+						{
+							socialLinks.map((social) => (
+								<a
+									href={social.href}
+									target="_blank"
+									rel="noopener noreferrer"
+									class="info-link social-link"
+								>
+									{social.label}
+								</a>
+							))
+						}
+					</div>
+				</div>
+
+				<!-- Column 4: Local Time (India Standard Time) -->
+				<div class="info-col info-col-4">
+					<h3 class="info-heading">Local time</h3>
+					<div class="detail-list">
+						<p class="clock-display" id="footer-live-clock">{initialTime}</p>
+						<p class="info-detail" id="footer-live-date">{initialDate}</p>
+						<p class="info-detail">IST · UTC+05:30</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</Container>
+</Section>
+
+<script>
+	let timerId: number | undefined;
+
+	function initLocalClock() {
+		const timeEl = document.getElementById('footer-live-clock');
+		const dateEl = document.getElementById('footer-live-date');
+		if (!timeEl || !dateEl) return;
+
+		const timeFormatter = new Intl.DateTimeFormat('en-US', {
+			timeZone: 'Asia/Kolkata',
+			hour: 'numeric',
+			minute: '2-digit',
+			second: '2-digit',
+			hour12: true,
+		});
+
+		const dateFormatter = new Intl.DateTimeFormat('en-GB', {
+			timeZone: 'Asia/Kolkata',
+			weekday: 'long',
+			day: 'numeric',
+			month: 'long',
+			year: 'numeric',
+		});
+
+		function update() {
+			const now = new Date();
+			timeEl.textContent = timeFormatter.format(now);
+			dateEl.textContent = dateFormatter.format(now);
+		}
+
+		update();
+
+		if (timerId) clearInterval(timerId);
+		timerId = window.setInterval(update, 1000);
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initLocalClock);
+	} else {
+		initLocalClock();
+	}
+
+	document.addEventListener('astro:page-load', initLocalClock);
+</script>
+
+<style>
+	/* --------------------------------------------------
+	 * Footer Layout
+	 * -------------------------------------------------- */
+	.footer-layout {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+	}
+
+	/* --------------------------------------------------
+	 * Top Row: Statement & Resume Button
+	 * -------------------------------------------------- */
+	.footer-top-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 32px;
+		width: 100%;
+	}
+
+	.contact-statement {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 18px;
+		font-weight: 500;
+		line-height: 1.4;
+		color: #ffffff;
+		margin: 0;
+		letter-spacing: -0.01em;
+	}
+
+	.accent-text {
+		color: var(--color-accent, #FF6E4E);
+	}
+
+	.footer-action {
+		flex-shrink: 0;
+	}
+
+	/* --------------------------------------------------
+	 * Prominent Display Email Heading
+	 * -------------------------------------------------- */
+	.footer-email-container {
+		margin: 44px 0 60px 0;
+		width: 100%;
+	}
+
+	.footer-email {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: clamp(32px, 5.8vw, 76px);
+		font-weight: 500;
+		line-height: 1.05;
+		letter-spacing: -0.02em;
+		color: #ffffff;
+		text-decoration: none;
+		display: inline-block;
+		transition: opacity 0.15s ease;
+		word-break: break-word;
+	}
+
+	.footer-email:hover {
+		opacity: 0.85;
+	}
+
+	/* --------------------------------------------------
+	 * Bottom Information Row (Four Columns)
+	 * -------------------------------------------------- */
+	.footer-info-row {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: 24px;
+		width: 100%;
+		padding-top: 12px;
+	}
+
+	.info-col-1 {
+		grid-column: span 3;
+	}
+
+	.info-col-2 {
+		grid-column: span 3;
+	}
+
+	.info-col-3 {
+		grid-column: span 3;
+	}
+
+	.info-col-4 {
+		grid-column: span 3;
+	}
+
+	.info-col {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.info-heading {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 16px;
+		font-weight: 500;
+		line-height: 1.3;
+		color: #ffffff;
+		margin: 0 0 10px 0;
+		letter-spacing: -0.01em;
+	}
+
+	.clock-display {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 16px;
+		font-weight: 500;
+		line-height: 1.4;
+		color: #ffffff;
+		margin: 0;
+		letter-spacing: -0.01em;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.info-detail {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 1.5;
+		color: #a3a3a3;
+		margin: 0;
+		letter-spacing: -0.01em;
+	}
+
+	.detail-list {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.info-link {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 1.5;
+		color: #a3a3a3;
+		text-decoration: none;
+		letter-spacing: -0.01em;
+		transition: color 0.15s ease;
+	}
+
+	.info-link:hover {
+		color: #ffffff;
+	}
+
+	/* --------------------------------------------------
+	 * Responsive Reflow
+	 * -------------------------------------------------- */
+	@media (max-width: 1024px) {
+		.info-col-1,
+		.info-col-2,
+		.info-col-3,
+		.info-col-4 {
+			grid-column: span 6;
+		}
+
+		.footer-info-row {
+			row-gap: 32px;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.footer-top-row {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 20px;
+		}
+
+		.footer-email-container {
+			margin: 36px 0 44px 0;
+		}
+
+		.footer-email {
+			font-size: clamp(26px, 7vw, 42px);
+			word-break: break-all;
+		}
+
+		.footer-info-row {
+			display: flex;
+			flex-direction: column;
+			gap: 32px;
+		}
+	}
+</style>

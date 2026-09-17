@@ -1,0 +1,45 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface CommonProps {
+	variant?: 'primary' | 'outlined';
+	class?: string;
+}
+
+type ButtonAsButton = CommonProps &
+	HTMLAttributes<'button'> & {
+		href?: never;
+	};
+
+type ButtonAsLink = CommonProps &
+	HTMLAttributes<'a'> & {
+		href: string;
+	};
+
+type Props = ButtonAsButton | ButtonAsLink;
+
+const {
+	variant = 'primary',
+	class: className = '',
+	...rest
+} = Astro.props;
+
+const variantClass = variant === 'primary' ? 'btn-primary' : 'btn-outlined';
+const combinedClasses = `btn-base ${variantClass} ${className}`.trim();
+---
+
+{
+	'href' in rest && rest.href ? (
+		<a class={combinedClasses} {...(rest as HTMLAttributes<'a'>)}>
+			<slot />
+		</a>
+	) : (
+		<button
+			type={(rest as HTMLAttributes<'button'>).type || 'button'}
+			class={combinedClasses}
+			{...(rest as HTMLAttributes<'button'>)}
+		>
+			<slot />
+		</button>
+	)
+}

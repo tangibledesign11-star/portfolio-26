@@ -1,0 +1,315 @@
+---
+import Container from './Container.astro';
+
+interface Props {
+	title: string;
+	eyebrow: string;
+	heroImage: string;
+	heroAlt?: string;
+	role: string;
+	websiteUrl: string;
+	websiteLabel?: string;
+	class?: string;
+}
+
+const {
+	title,
+	eyebrow,
+	heroImage,
+	heroAlt,
+	role,
+	websiteUrl,
+	websiteLabel = 'Website',
+	class: className = '',
+} = Astro.props;
+
+// Ensure role has star prefix if not already present
+const displayRole = role.startsWith('✦') ? role : `✦ ${role}`;
+---
+
+<section class={`case-study-hero-section ${className}`.trim()}>
+	<Container>
+		<div class="case-study-hero-layout">
+			<!-- Top Controls Row: Back Link & Eyebrow -->
+			<div class="hero-top-row">
+				<a href="/" class="back-link" aria-label="Back to homepage">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="14"
+						height="14"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+						class="back-arrow"
+					>
+						<line x1="19" y1="12" x2="5" y2="12" />
+						<polyline points="12 19 5 12 12 5" />
+					</svg>
+					<span>Back</span>
+				</a>
+
+				<p class="case-study-eyebrow">
+					{eyebrow}
+				</p>
+			</div>
+
+			<!-- Title Section -->
+			<div class="hero-title-container">
+				<h1 class="case-study-title">
+					{title}
+				</h1>
+			</div>
+
+			<!-- Hero Image -->
+			<div class="hero-media-container">
+				<img
+					src={heroImage}
+					alt={heroAlt || title}
+					width="1280"
+					height="768"
+					loading="eager"
+					fetchpriority="high"
+					decoding="async"
+					class="hero-media-image"
+				/>
+			</div>
+
+			<!-- Bottom Metadata Row: Static Role Pill & Website Link -->
+			<div class="hero-metadata-row">
+				<div class="role-pill-static">
+					<span class="role-pill-text">{displayRole}</span>
+				</div>
+
+				{
+					websiteUrl && (
+						<a
+							href={websiteUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="website-link"
+						>
+							{websiteLabel}
+						</a>
+					)
+				}
+			</div>
+		</div>
+	</Container>
+</section>
+
+<style>
+	/* --------------------------------------------------
+	 * Section Container & Layout Spacing
+	 * Matches portfolio section rhythm (80px desktop, 40px mobile)
+	 * -------------------------------------------------- */
+	.case-study-hero-section {
+		width: 100%;
+		padding: 56px 80px 80px 80px;
+		box-sizing: border-box;
+		background-color: var(--color-bg, #060606);
+	}
+
+	.case-study-hero-layout {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+	}
+
+	/* --------------------------------------------------
+	 * Top Controls Row: Back Link & Eyebrow
+	 * -------------------------------------------------- */
+	.hero-top-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 24px;
+		width: 100%;
+		margin-bottom: 40px;
+	}
+
+	.back-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 7px 18px;
+		border: 1px solid rgba(255, 255, 255, 0.4);
+		border-radius: 9999px;
+		background-color: #060606;
+		color: #ffffff;
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 1;
+		text-decoration: none;
+		user-select: none;
+		transition: border-color 0.15s ease, background-color 0.15s ease;
+	}
+
+	.back-link:hover {
+		border-color: #ffffff;
+		background-color: rgba(255, 255, 255, 0.08);
+	}
+
+	.back-link:focus-visible {
+		outline: 2px solid var(--color-accent, #FF6E4E);
+		outline-offset: 2px;
+	}
+
+	.back-arrow {
+		flex-shrink: 0;
+	}
+
+	.case-study-eyebrow {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 18px;
+		font-weight: 500;
+		line-height: 1.3;
+		color: var(--color-accent, #FF6E4E);
+		letter-spacing: -0.01em;
+		margin: 0;
+		text-align: right;
+		white-space: nowrap;
+	}
+
+	/* --------------------------------------------------
+	 * Case Study Display Title
+	 * -------------------------------------------------- */
+	.hero-title-container {
+		width: 100%;
+		margin-bottom: 48px;
+	}
+
+	.case-study-title {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: clamp(32px, 4.4vw, 56px);
+		font-weight: 500;
+		line-height: 1.15;
+		letter-spacing: -0.02em;
+		color: #ffffff;
+		margin: 0;
+		width: 100%;
+		word-break: break-word;
+	}
+
+	/* --------------------------------------------------
+	 * Hero Image Container
+	 * -------------------------------------------------- */
+	.hero-media-container {
+		width: 100%;
+		overflow: hidden;
+		border-radius: 12px;
+		background-color: #121212;
+		margin-bottom: 24px;
+	}
+
+	.hero-media-image {
+		width: 100%;
+		height: auto;
+		display: block;
+		border-radius: 12px;
+		object-fit: cover;
+	}
+
+	/* --------------------------------------------------
+	 * Bottom Metadata Row: Static Role Pill & Website Link
+	 * -------------------------------------------------- */
+	.hero-metadata-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 20px;
+		width: 100%;
+		padding-top: 4px;
+	}
+
+	.role-pill-static {
+		display: inline-flex;
+		align-items: center;
+		border: 0.5px solid rgba(255, 255, 255, 0.8);
+		border-radius: 9999px;
+		padding: 6px 14px;
+		background-color: var(--color-bg, #060606);
+		color: #ffffff;
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 1.2;
+		user-select: none;
+		width: fit-content;
+	}
+
+	.role-pill-text {
+		white-space: nowrap;
+	}
+
+	.website-link {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 16px;
+		font-weight: 500;
+		color: #ffffff;
+		text-decoration: underline;
+		text-underline-offset: 4px;
+		letter-spacing: -0.01em;
+		transition: opacity 0.15s ease;
+		white-space: nowrap;
+	}
+
+	.website-link:hover {
+		opacity: 0.8;
+	}
+
+	.website-link:focus-visible {
+		outline: 2px solid var(--color-accent, #FF6E4E);
+		outline-offset: 2px;
+	}
+
+	/* --------------------------------------------------
+	 * Responsive Reflow
+	 * -------------------------------------------------- */
+	@media (max-width: 992px) {
+		.case-study-eyebrow {
+			white-space: normal;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.case-study-hero-section {
+			padding: 32px 20px 60px 20px;
+		}
+
+		.hero-top-row {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 16px;
+			margin-bottom: 28px;
+		}
+
+		.case-study-eyebrow {
+			text-align: left;
+			font-size: 16px;
+		}
+
+		.hero-title-container {
+			margin-bottom: 32px;
+		}
+
+		.hero-media-container {
+			margin-bottom: 20px;
+			border-radius: 8px;
+		}
+
+		.hero-media-image {
+			border-radius: 8px;
+		}
+
+		.hero-metadata-row {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 16px;
+		}
+	}
+</style>

@@ -1,0 +1,151 @@
+---
+import Container from './Container.astro';
+
+export interface GalleryItem {
+	image: string;
+	alt?: string;
+	caption: string;
+}
+
+interface Props {
+	items: GalleryItem[];
+	class?: string;
+}
+
+const { items = [], class: className = '' } = Astro.props;
+---
+
+<section class={`case-study-gallery-section ${className}`.trim()}>
+	<Container>
+		<div class="gallery-grid">
+			{
+				items.map((item) => (
+					<figure class="gallery-item">
+						<div class="gallery-media-wrapper">
+							<img
+								src={item.image}
+								alt={item.alt || item.caption}
+								width="1240"
+								height="800"
+								loading="lazy"
+								decoding="async"
+								class="gallery-image"
+							/>
+						</div>
+						<figcaption class="gallery-caption">
+							<span class="caption-indicator" aria-hidden="true" />
+							<span class="caption-text">{item.caption}</span>
+						</figcaption>
+					</figure>
+				))
+			}
+		</div>
+	</Container>
+</section>
+
+<style>
+	/* --------------------------------------------------
+	 * Case Study Gallery Section
+	 * Continuous flow following Project Details section
+	 * -------------------------------------------------- */
+	.case-study-gallery-section {
+		width: 100%;
+		padding: 0 80px 120px 80px;
+		background-color: var(--color-bg, #060606);
+		box-sizing: border-box;
+	}
+
+	/* --------------------------------------------------
+	 * 2-Column Gallery Grid
+	 * Equal-width columns, 20px horizontal gap, 56px vertical gap
+	 * -------------------------------------------------- */
+	.gallery-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		column-gap: 20px;
+		row-gap: 56px;
+		width: 100%;
+	}
+
+	.gallery-item {
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+	}
+
+	/* --------------------------------------------------
+	 * Gallery Image Wrapper & Image
+	 * Rounded corners consistent with case study hero (12px)
+	 * Original aspect ratio preserved without cropping
+	 * -------------------------------------------------- */
+	.gallery-media-wrapper {
+		width: 100%;
+		border-radius: 12px;
+		overflow: hidden;
+		background-color: #121212;
+	}
+
+	.gallery-image {
+		width: 100%;
+		height: auto;
+		display: block;
+		border-radius: 12px;
+		object-fit: cover;
+	}
+
+	/* --------------------------------------------------
+	 * Caption Styling
+	 * Placed directly below image
+	 * White text, 14px, weight 500, line-height 1.4
+	 * Thin vertical white line immediately before caption
+	 * -------------------------------------------------- */
+	.gallery-caption {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-top: 14px;
+	}
+
+	.caption-indicator {
+		display: inline-block;
+		width: 1.5px;
+		height: 13px;
+		background-color: #ffffff;
+		flex-shrink: 0;
+		border-radius: 1px;
+	}
+
+	.caption-text {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 1.4;
+		color: #ffffff;
+		letter-spacing: -0.01em;
+	}
+
+	/* --------------------------------------------------
+	 * Responsive Reflow: Collapse to single column on mobile
+	 * -------------------------------------------------- */
+	@media (max-width: 768px) {
+		.case-study-gallery-section {
+			padding: 0 20px 80px 20px;
+		}
+
+		.gallery-grid {
+			grid-template-columns: 1fr;
+			row-gap: 40px;
+		}
+
+		.gallery-media-wrapper,
+		.gallery-image {
+			border-radius: 8px;
+		}
+
+		.gallery-caption {
+			margin-top: 12px;
+		}
+	}
+</style>

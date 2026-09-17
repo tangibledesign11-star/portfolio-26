@@ -1,0 +1,99 @@
+---
+import RootLayout from '../../layouts/RootLayout.astro';
+import AnnouncementBanner from '../../components/AnnouncementBanner.astro';
+import Navigation from '../../components/Navigation.astro';
+import CaseStudyHero from '../../components/CaseStudyHero.astro';
+import CaseStudyDetails from '../../components/CaseStudyDetails.astro';
+import CaseStudyGallery from '../../components/CaseStudyGallery.astro';
+import CaseStudyUpNext from '../../components/CaseStudyUpNext.astro';
+import Footer from '../../components/Footer.astro';
+
+export async function getStaticPaths() {
+	const posts = import.meta.glob('../../content/work/*.mdx', { eager: true });
+	return Object.entries(posts).map(([path, post]: [string, any]) => {
+		const slug = path.split('/').pop()?.replace(/\.mdx$/, '');
+		return {
+			params: { slug },
+			props: {
+				frontmatter: post.frontmatter,
+				Content: post.Content,
+			},
+		};
+	});
+}
+
+const { slug } = Astro.params;
+const { frontmatter, Content } = Astro.props;
+const {
+	title,
+	eyebrow,
+	heroImage,
+	heroAlt,
+	role,
+	websiteUrl,
+	websiteLabel,
+	gallery,
+	closingSections,
+} = frontmatter;
+
+const pageTitle = `${title.split('—')[0].trim()} — Case Study`;
+---
+
+<RootLayout title={pageTitle} description={title} image={heroImage}>
+	<!-- Announcement Banner -->
+	<AnnouncementBanner slot="banner" />
+
+	<!-- Navigation Bar -->
+	<Navigation slot="nav" />
+
+	<!-- First Section: Case Study Hero -->
+	<CaseStudyHero
+		title={title}
+		eyebrow={eyebrow}
+		heroImage={heroImage}
+		heroAlt={heroAlt}
+		role={role}
+		websiteUrl={websiteUrl}
+		websiteLabel={websiteLabel}
+	/>
+
+	<!-- Second Section: Project Details (Rendered from MDX) -->
+	{
+		Content && (
+			<CaseStudyDetails>
+				<Content />
+			</CaseStudyDetails>
+		)
+	}
+
+	<!-- Third Section: Case Study Gallery (Rendered from frontmatter if present) -->
+	{
+		gallery && gallery.length > 0 && (
+			<CaseStudyGallery items={gallery} />
+		)
+	}
+
+	<!-- Fourth Section: Text Section (Design and implementation, Reflection) -->
+	{
+		closingSections && closingSections.length > 0 && (
+			<CaseStudyDetails>
+				{closingSections.map((sec: any) => (
+					<>
+						<h2>{sec.heading}</h2>
+						{Array.isArray(sec.text) ? (
+							sec.text.map((p: string) => <p>{p}</p>)
+						) : (
+							<p>{sec.text}</p>
+						)}
+					</>
+				))}
+			</CaseStudyDetails>
+		)
+	}
+
+	<!-- Fifth Section: Up Next (Excludes currently viewed project) -->
+	<CaseStudyUpNext currentSlug={slug || ''} />
+
+	<!-- Footer / Contact Section -->
+	<Footer slot="footer" />
+</RootLayout>

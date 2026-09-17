@@ -1,0 +1,301 @@
+---
+import Section from './Section.astro';
+import Container from './Container.astro';
+import Button from './Button.astro';
+
+interface Challenge {
+	title: string;
+	meta: string;
+	description: string;
+	action: string;
+	image: string;
+	alt: string;
+	href: string;
+}
+
+const challenges: Challenge[] = [
+	{
+		title: 'Buddymoon',
+		meta: 'Web · 5 Days',
+		description: 'An exclusive invitation-only travel website.',
+		action: 'View Project',
+		image: '/images/Buddymoon.webp',
+		alt: 'Buddymoon — Exclusive invitation-only travel website design challenge',
+		href: 'https://www.figma.com/file/SJIpJQNHvO21kNUxp2XaMa/Buddymoon?type=design&node-id=0%3A1&mode=design&t=8TaqlQ1uB9SlSXPo-1',
+	},
+	{
+		title: 'Prep Master',
+		meta: 'Mobile · 3 Days',
+		description: 'An exam prep app for school going students.',
+		action: 'View Project',
+		image: '/images/Prep Master.webp',
+		alt: 'Prep Master — Exam prep app for school going students design challenge',
+		href: 'https://www.figma.com/file/KVUyOhBvr2zHEHvji08SK9/Prep-Master?type=design&node-id=0%3A1&mode=design&t=NyeVzcYoSJer9Scg-1',
+	},
+	{
+		title: 'Taskr',
+		meta: 'Mobile · 2 Days',
+		description: 'An efficient task management app.',
+		action: 'Download',
+		image: '/images/Taskr.webp',
+		alt: 'Taskr — Efficient task management app design challenge',
+		href: 'https://drive.google.com/file/d/17xOgayraHkUcpxZJvDlfUKD7dGMnzVef/view?usp=drive_link',
+	},
+	{
+		title: 'PowerPulse',
+		meta: 'Desktop & Mobile · 3 Days',
+		description: 'A home energy insights platform.',
+		action: 'Download',
+		image: '/images/PowerPulse.webp',
+		alt: 'PowerPulse — Home energy insights platform design challenge',
+		href: 'https://drive.google.com/file/d/1IJDVuewXep8fGG9srArf8rLhY8Viuxep/view?usp=drive_link',
+	},
+];
+---
+
+<Section id="design-challenges" bordered={true} class="design-challenges-section">
+	<Container>
+		<div class="challenges-layout">
+			<!-- Row 1: Section Introduction -->
+			<div class="intro-row">
+				<div class="intro-left">
+					<p class="text-eyebrow intro-eyebrow">Working within deadline</p>
+					<h2 class="text-h2 intro-title">Design Challenges</h2>
+				</div>
+				<div class="intro-right">
+					<p class="intro-description">
+						A showcase of Interview-Inspired Creations, here, you'll find the designs that I created as part of interview challenges. Each one was completed under short time period and showcases my ability to think on my feet and come up with creative solutions.
+					</p>
+				</div>
+			</div>
+
+			<!-- Row 2: Challenges Grid (2-column layout) -->
+			<div class="challenges-grid">
+				{
+					challenges.map((challenge) => (
+						<article class="challenge-card">
+							<div class="card-media">
+								<img
+									src={challenge.image}
+									alt={challenge.alt}
+									width="1260"
+									height="756"
+									loading="lazy"
+									decoding="async"
+									class="card-image"
+								/>
+							</div>
+							<div class="card-body">
+								<div class="card-info">
+									<p class="card-meta">[ {challenge.meta} ]</p>
+									<p class="card-description">{challenge.description}</p>
+								</div>
+								<div class="card-action">
+									<Button
+										variant="outlined"
+										href={challenge.href}
+										target="_blank"
+										rel="noopener noreferrer"
+										class="challenge-btn"
+									>
+										{challenge.action}
+									</Button>
+								</div>
+							</div>
+						</article>
+					))
+				}
+			</div>
+		</div>
+	</Container>
+</Section>
+
+<style>
+	/* --------------------------------------------------
+	 * Section Layout Structure
+	 * Exact 56px vertical gap between Row 1 and Row 2
+	 * -------------------------------------------------- */
+	.challenges-layout {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		gap: 56px; /* Exact gap between Intro and Grid */
+	}
+
+	/* --------------------------------------------------
+	 * Row 1: Section Introduction
+	 * 12-column grid, horizontal desktop composition
+	 * -------------------------------------------------- */
+	.intro-row {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: 24px;
+		align-items: start;
+		width: 100%;
+	}
+
+	.intro-left {
+		grid-column: 1 / 7;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.intro-eyebrow {
+		margin: 0 0 16px 0;
+	}
+
+	.intro-title {
+		margin: 0;
+		color: #ffffff;
+	}
+
+	.intro-right {
+		grid-column: 7 / 13;
+		display: flex;
+		align-items: flex-start;
+		width: 100%;
+	}
+
+	.intro-description {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 18px;
+		line-height: 1.55;
+		color: #a3a3a3;
+		width: 100%;
+		max-width: 100%;
+		margin: 0;
+		letter-spacing: -0.01em;
+	}
+
+	/* --------------------------------------------------
+	 * Row 2: Challenges Grid
+	 * Exactly two columns with:
+	 * 20px gap between adjacent cards in the same row
+	 * 56px gap between card rows
+	 * -------------------------------------------------- */
+	.challenges-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		column-gap: 20px; /* Exact 20px gap between adjacent cards */
+		row-gap: 56px;    /* Exact 56px gap between card rows */
+		width: 100%;
+	}
+
+	/* --------------------------------------------------
+	 * Challenge Card
+	 * Clean container without extraneous borders
+	 * -------------------------------------------------- */
+	.challenge-card {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		min-width: 0;
+	}
+
+	.card-media {
+		width: 100%;
+		overflow: hidden;
+		border-radius: 8px; /* Clean corner radius matching reference */
+		background-color: #121212;
+	}
+
+	.card-image {
+		width: 100%;
+		height: auto;
+		aspect-ratio: 5 / 3;
+		object-fit: cover;
+		display: block;
+		border-radius: 8px;
+	}
+
+	/* --------------------------------------------------
+	 * Card Content Below Image
+	 * -------------------------------------------------- */
+	.card-body {
+		margin-top: 20px;
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 20px;
+		width: 100%;
+		min-width: 0;
+	}
+
+	.card-info {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		flex: 1 1 auto;
+		min-width: 0;
+	}
+
+	.card-meta {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 1.4;
+		color: #a3a3a3;
+		letter-spacing: -0.01em;
+		margin: 0 0 8px 0;
+	}
+
+	.card-description {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 18px;
+		font-weight: 500;
+		line-height: 1.45;
+		color: #ffffff;
+		letter-spacing: -0.015em;
+		margin: 0;
+	}
+
+	.card-action {
+		flex-shrink: 0;
+		padding-top: 2px;
+	}
+
+	/* Compact outlined pill button */
+	:global(.challenge-btn) {
+		font-size: 14px !important;
+		padding: 7px 16px !important;
+		white-space: nowrap !important;
+	}
+
+	/* --------------------------------------------------
+	 * Responsive Behavior
+	 * -------------------------------------------------- */
+	@media (max-width: 992px) {
+		.intro-row {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 20px;
+		}
+
+		.intro-right {
+			padding-bottom: 0;
+		}
+
+		.intro-description {
+			max-width: 100%;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.challenges-layout {
+			gap: 40px;
+		}
+
+		.challenges-grid {
+			grid-template-columns: 1fr;
+			row-gap: 48px;
+		}
+
+		.card-body {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 16px;
+		}
+	}
+</style>

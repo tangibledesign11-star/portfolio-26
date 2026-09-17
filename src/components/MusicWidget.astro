@@ -1,0 +1,338 @@
+---
+interface Props {
+	audioSrc?: string;
+	albumSrc?: string;
+	albumAlt?: string;
+	class?: string;
+}
+
+const {
+	audioSrc = '/audio/No%20Limits.mp3',
+	albumSrc = '/images/album.jpg',
+	albumAlt = 'No Limits by Skeler',
+	class: className = '',
+} = Astro.props;
+---
+
+<aside
+	id="music-widget"
+	class={`music-widget ${className}`.trim()}
+	transition:persist="music-player"
+	aria-label="Music Player"
+>
+	<!-- Native Audio Element -->
+	<audio
+		id="music-audio"
+		src={audioSrc}
+		preload="metadata"
+	></audio>
+
+	<!-- Album Cover, Play/Pause Button, and Top-Left Close Button -->
+	<div class="cover-wrapper">
+		<!-- Close Button (Positioned at top-left corner of the widget) -->
+		<button
+			type="button"
+			id="music-close-btn"
+			class="close-widget-btn"
+			aria-label="Close music widget"
+		>
+			<!-- Close Icon (Lucide x) -->
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="11"
+				height="11"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2.5"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<path d="M18 6 6 18"></path>
+				<path d="m6 6 12 12"></path>
+			</svg>
+		</button>
+
+		<div class="cover-disc" id="music-cover-disc">
+			<img
+				src={albumSrc}
+				alt={albumAlt}
+				width="48"
+				height="48"
+				loading="eager"
+				decoding="async"
+				class="cover-image"
+			/>
+		</div>
+
+		<!-- Play/Pause Button Overlay (Stays stationary while cover rotates) -->
+		<button
+			type="button"
+			id="music-play-btn"
+			class="play-control-btn"
+			aria-label="Play music"
+		>
+			<!-- Play Icon (Lucide play) -->
+			<svg
+				class="icon-play"
+				xmlns="http://www.w3.org/2000/svg"
+				width="18"
+				height="18"
+				viewBox="0 0 24 24"
+				fill="currentColor"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<polygon points="6 3 20 12 6 21 6 3"></polygon>
+			</svg>
+
+			<!-- Pause Icon (Lucide pause) -->
+			<svg
+				class="icon-pause"
+				xmlns="http://www.w3.org/2000/svg"
+				width="18"
+				height="18"
+				viewBox="0 0 24 24"
+				fill="currentColor"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<rect x="6" y="4" width="4" height="16"></rect>
+				<rect x="14" y="4" width="4" height="16"></rect>
+			</svg>
+		</button>
+	</div>
+</aside>
+
+<script>
+	function setupMusicWidget() {
+		const widget = document.getElementById('music-widget');
+		if (!widget || widget.dataset.initialized === 'true') return;
+		widget.dataset.initialized = 'true';
+
+		const audio = document.getElementById('music-audio') as HTMLAudioElement | null;
+		const playBtn = document.getElementById('music-play-btn') as HTMLButtonElement | null;
+		const closeBtn = document.getElementById('music-close-btn') as HTMLButtonElement | null;
+
+		if (!audio || !playBtn || !closeBtn) return;
+
+		function updatePlaybackState(isPlaying: boolean) {
+			if (!widget || !playBtn) return;
+			if (isPlaying) {
+				widget.classList.add('is-playing');
+				playBtn.setAttribute('aria-label', 'Pause music');
+			} else {
+				widget.classList.remove('is-playing');
+				playBtn.setAttribute('aria-label', 'Play music');
+			}
+		}
+
+		// Play / Pause toggle
+		playBtn.addEventListener('click', async () => {
+			if (audio.paused) {
+				try {
+					await audio.play();
+				} catch (err) {
+					console.warn('Playback blocked or failed:', err);
+					updatePlaybackState(false);
+				}
+			} else {
+				audio.pause();
+			}
+		});
+
+		// Drive state directly from native audio events
+		audio.addEventListener('play', () => updatePlaybackState(true));
+		audio.addEventListener('pause', () => updatePlaybackState(false));
+		audio.addEventListener('ended', () => updatePlaybackState(false));
+
+		// Close button removes widget from view for the current page view
+		closeBtn.addEventListener('click', () => {
+			audio.pause();
+			widget.style.display = 'none';
+		});
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', setupMusicWidget);
+	} else {
+		setupMusicWidget();
+	}
+
+	document.addEventListener('astro:page-load', setupMusicWidget);
+</script>
+
+<style>
+	/* --------------------------------------------------
+	 * Floating Music Widget Placement
+	 * Bottom-left of viewport, above content
+	 * -------------------------------------------------- */
+	.music-widget {
+		position: fixed;
+		bottom: 24px;
+		left: 24px;
+		z-index: 90;
+		display: block;
+		user-select: none;
+	}
+
+	@media (max-width: 768px) {
+		.music-widget {
+			bottom: 16px;
+			left: 16px;
+		}
+	}
+
+	/* --------------------------------------------------
+	 * Album Cover & Rotating Disc
+	 * -------------------------------------------------- */
+	.cover-wrapper {
+		position: relative;
+		width: 48px;
+		height: 48px;
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.cover-disc {
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+		overflow: hidden;
+		background-color: #121212;
+		box-shadow:
+			0 4px 16px rgba(0, 0, 0, 0.55),
+			0 0 0 1px rgba(255, 255, 255, 0.12);
+		animation: music-spin 14s linear infinite;
+		animation-play-state: paused;
+		will-change: transform;
+	}
+
+	.music-widget.is-playing .cover-disc {
+		animation-play-state: running;
+	}
+
+	@keyframes music-spin {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.cover-image {
+		width: 100%;
+		height: 100%;
+		aspect-ratio: 1 / 1;
+		object-fit: cover;
+		display: block;
+		pointer-events: none;
+	}
+
+	/* --------------------------------------------------
+	 * Play / Pause Overlay Button
+	 * Stays stationary and upright over rotating cover
+	 * -------------------------------------------------- */
+	.play-control-btn {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+		border: none;
+		background-color: rgba(0, 0, 0, 0.42);
+		backdrop-filter: blur(1.5px);
+		color: #ffffff;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: background-color 0.2s ease;
+		padding: 0;
+		z-index: 2;
+	}
+
+	.play-control-btn:hover {
+		background-color: rgba(0, 0, 0, 0.26);
+	}
+
+	.play-control-btn:focus-visible {
+		outline: 2px solid var(--color-accent, #FF6E4E);
+		outline-offset: 2px;
+	}
+
+	.icon-play {
+		display: block;
+		margin-left: 2px; /* optical center for triangle */
+	}
+
+	.icon-pause {
+		display: none;
+	}
+
+	.music-widget.is-playing .icon-play {
+		display: none;
+	}
+
+	.music-widget.is-playing .icon-pause {
+		display: block;
+	}
+
+	/* --------------------------------------------------
+	 * Close Button (Top-Left Corner of Widget)
+	 * -------------------------------------------------- */
+	.close-widget-btn {
+		position: absolute;
+		top: -4px;
+		left: -4px;
+		width: 18px;
+		height: 18px;
+		border-radius: 9999px;
+		border: 1px solid #333333;
+		background-color: #141414;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.75);
+		color: #a3a3a3;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
+		z-index: 10;
+		transition:
+			color 0.15s ease,
+			background-color 0.15s ease,
+			border-color 0.15s ease,
+			transform 0.15s ease;
+	}
+
+	.close-widget-btn:hover {
+		color: #ffffff;
+		background-color: #242424;
+		border-color: #555555;
+		transform: scale(1.1);
+	}
+
+	.close-widget-btn:focus-visible {
+		outline: 2px solid var(--color-accent, #FF6E4E);
+		outline-offset: 2px;
+	}
+
+	/* --------------------------------------------------
+	 * Reduced Motion
+	 * -------------------------------------------------- */
+	@media (prefers-reduced-motion: reduce) {
+		.cover-disc {
+			animation: none !important;
+		}
+	}
+</style>

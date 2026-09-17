@@ -1,0 +1,555 @@
+---
+import Section from './Section.astro';
+import Container from './Container.astro';
+
+interface Recommendation {
+	id: string;
+	number: string;
+	paragraphs: string[];
+	name: string;
+	role: string;
+	image: string;
+	linkedin: string;
+}
+
+const recommendations: Recommendation[] = [
+	{
+		id: 'rec-1',
+		number: '01',
+		paragraphs: [
+			"I worked with Pushkar in a small but innovative design team. He always had a visible empathy towards people who worked with him. You always know he's got your back when you're working with him. First of all, he's a fantastic team player and would always have innovative ideas to improve the visual aesthetics of things. Having said that, I really enjoyed critiquing his UI designs which often told a story. His ability to get requirements from the stakeholders and convert them into visual designs add to his arsenal.",
+			"He’d go the extra mile to work with the external designers to sort out some design problems as well. His love to design is so much. I would definitely recommend him and his designs anytime, anyday!",
+		],
+		name: 'Ilamurugu Rajendran',
+		role: 'Sr. Visual Designer | Brand Designer | Webflow Developer',
+		image: '/images/Ila.png',
+		linkedin: 'https://www.linkedin.com/in/ilamurugu-raj/',
+	},
+	{
+		id: 'rec-2',
+		number: '02',
+		paragraphs: [
+			"I had a chance to work with Pushkar on several projects where his brilliance and expertise as a Designer was outstanding: he is a true professional in every sense.",
+			"His ability to intuitively understand user needs and translate them into seamless designs SIGNIFICANTLY improved multiple products' usability – especially tCognition's entire website.",
+			"Being the generalist that he is, Pushkar often bridged the gap between design, development, and business strategy with ease, stepping in to assist wherever needed. I observed – his proactive nature keeps him one step ahead: anticipating the problems and suggesting some very innovative solutions before they became issues.",
+			"Pushkar's talent, versatility, and initiative make him a priceless asset for any team. I strongly recommend him for any design or leadership opportunity.",
+		],
+		name: 'Jade Bodkhe',
+		role: 'Strategy and Operations Manager',
+		image: '/images/Jade.png',
+		linkedin: 'https://www.linkedin.com/in/jadebodkhe/',
+	},
+	{
+		id: 'rec-3',
+		number: '03',
+		paragraphs: [
+			"As someone who had the privilege of being your HR, I want to express my heartfelt appreciation for your outstanding contributions. Your dedication, creativity, and positive energy never ceased to amaze us. You're not just a fantastic team member; you're an incredible friend as well.",
+			"Highly Recommended!",
+		],
+		name: 'Vaishnavi Raskar',
+		role: 'Assistant Manager HR',
+		image: '/images/Vaishnavi.png',
+		linkedin: 'https://www.linkedin.com/in/vaishnavi-raskar-573324192/',
+	},
+];
+---
+
+<Section id="recommendations" bordered={true} class="recommendations-section">
+	<Container>
+		<div class="recommendations-layout" id="recommendations-carousel">
+			<!-- Eyebrow: Same as everywhere else with accent color -->
+			<div class="recommendations-header">
+				<p class="text-eyebrow rec-eyebrow">
+					Recommendation [ <span id="rec-active-number" class="active-number">01</span> ]
+				</p>
+			</div>
+
+			<!-- Testimonial Slides: Only active slide displayed -->
+			<div class="slides-container" role="region" aria-roledescription="carousel" aria-label="Client & Peer Recommendations">
+				{
+					recommendations.map((rec, index) => (
+						<article
+							class={`rec-slide ${index === 0 ? 'is-active' : ''}`}
+							id={`rec-slide-${index}`}
+							role="group"
+							aria-roledescription="slide"
+							aria-label={`Recommendation ${index + 1} of ${recommendations.length}`}
+							data-slide-index={index}
+						>
+							<div class="rec-quote-body">
+								{rec.paragraphs.map((p) => (
+									<p class="rec-quote-p">{p}</p>
+								))}
+							</div>
+
+							<!-- Slide Bottom: Profile metadata on left, controls slot on right -->
+							<div class="rec-slide-footer">
+								<div class="rec-profile">
+									<img
+										src={rec.image}
+										alt={rec.name}
+										width="56"
+										height="56"
+										loading="lazy"
+										decoding="async"
+										class="profile-avatar"
+									/>
+									<div class="profile-details">
+										<div class="profile-name-row">
+											<span class="profile-name">{rec.name}</span>
+											<a
+												href={rec.linkedin}
+												target="_blank"
+												rel="noopener noreferrer"
+												class="linkedin-link"
+												aria-label={`${rec.name}'s LinkedIn profile`}
+											>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													viewBox="0 0 24 24"
+													fill="currentColor"
+													class="linkedin-icon"
+													aria-hidden="true"
+												>
+													<path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.45c-.9 0-1.63.73-1.63 1.63s.73 1.63 1.63 1.63 1.63-.73 1.63-1.63c0-.9-.73-1.63-1.63-1.63Z" />
+												</svg>
+											</a>
+										</div>
+										<p class="profile-role">{rec.role}</p>
+									</div>
+								</div>
+							</div>
+						</article>
+					))
+				}
+			</div>
+
+			<!-- Carousel Controls (Bottom-Right overlay or inline) -->
+			<div class="carousel-nav" aria-label="Recommendation navigation">
+				<button
+					type="button"
+					id="rec-prev-btn"
+					class="nav-btn nav-btn-prev"
+					aria-label="Previous recommendation"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+					>
+						<path d="m12 19-7-7 7-7" />
+						<path d="M19 12H5" />
+					</svg>
+				</button>
+				<button
+					type="button"
+					id="rec-next-btn"
+					class="nav-btn nav-btn-next"
+					aria-label="Next recommendation"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+					>
+						<path d="M5 12h14" />
+						<path d="m12 5 7 7-7 7" />
+					</svg>
+				</button>
+			</div>
+		</div>
+	</Container>
+</Section>
+
+<script>
+	let autoplayTimer: ReturnType<typeof setInterval> | null = null;
+
+	function initRecommendationsCarousel() {
+		const container = document.getElementById('recommendations-carousel');
+		if (!container) return;
+
+		// Clear any existing timer on re-init
+		if (autoplayTimer) {
+			clearInterval(autoplayTimer);
+			autoplayTimer = null;
+		}
+
+		const slides = container.querySelectorAll<HTMLElement>('.rec-slide');
+		const prevBtn = document.getElementById('rec-prev-btn');
+		const nextBtn = document.getElementById('rec-next-btn');
+		const numberEl = document.getElementById('rec-active-number');
+
+		if (!slides.length || !prevBtn || !nextBtn || !numberEl) return;
+
+		let currentIndex = 0;
+		const totalSlides = slides.length;
+
+		function updateSlide(newIndex: number) {
+			slides[currentIndex]?.classList.remove('is-active');
+			currentIndex = (newIndex + totalSlides) % totalSlides;
+			slides[currentIndex]?.classList.add('is-active');
+
+			const formattedNumber = String(currentIndex + 1).padStart(2, '0');
+			numberEl.textContent = formattedNumber;
+		}
+
+		function startAutoplay() {
+			stopAutoplay();
+			const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+			if (!prefersReduced) {
+				autoplayTimer = setInterval(() => {
+					updateSlide(currentIndex + 1);
+				}, 7000);
+			}
+		}
+
+		function stopAutoplay() {
+			if (autoplayTimer) {
+				clearInterval(autoplayTimer);
+				autoplayTimer = null;
+			}
+		}
+
+		function restartAutoplay() {
+			stopAutoplay();
+			startAutoplay();
+		}
+
+		prevBtn.addEventListener('click', () => {
+			updateSlide(currentIndex - 1);
+			restartAutoplay();
+		});
+
+		nextBtn.addEventListener('click', () => {
+			updateSlide(currentIndex + 1);
+			restartAutoplay();
+		});
+
+		// Pause autoplay when hovering or focusing inside the carousel
+		container.addEventListener('mouseenter', stopAutoplay);
+		container.addEventListener('mouseleave', startAutoplay);
+		container.addEventListener('focusin', stopAutoplay);
+		container.addEventListener('focusout', startAutoplay);
+
+		// Start autoplay on load
+		startAutoplay();
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initRecommendationsCarousel);
+	} else {
+		initRecommendationsCarousel();
+	}
+
+	document.addEventListener('astro:page-load', initRecommendationsCarousel);
+</script>
+
+<style>
+	/* --------------------------------------------------
+	 * Recommendations Section Background
+	 * Diagonal line pattern texture from Line BG.webp
+	 * -------------------------------------------------- */
+	:global(#recommendations),
+	:global(.recommendations-section) {
+		background-color: var(--color-bg, #060606);
+		background-image: url('/images/Line BG.webp');
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: cover;
+	}
+
+	/* --------------------------------------------------
+	 * Recommendations Layout
+	 * -------------------------------------------------- */
+	.recommendations-layout {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+	}
+
+	/* --------------------------------------------------
+	 * Eyebrow: Tailwind neutral-500 (#737373)
+	 * -------------------------------------------------- */
+	.recommendations-header {
+		margin-bottom: 40px;
+	}
+
+	.rec-eyebrow {
+		color: var(--color-accent, #FF6E4E);
+		margin: 0;
+		user-select: none;
+	}
+
+	/* --------------------------------------------------
+	 * Slides Container: Fixed height via CSS Grid stack
+	 * All slides share the same grid area "slide".
+	 * The container naturally sizes to the tallest slide,
+	 * ensuring zero height jumps or layout shift during transitions.
+	 * -------------------------------------------------- */
+	.slides-container {
+		display: grid;
+		grid-template-areas: "slide";
+		position: relative;
+		width: 100%;
+		min-height: 500px;
+	}
+
+	.rec-slide {
+		grid-area: slide;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		width: 100%;
+		height: 100%;
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s ease;
+	}
+
+	.rec-slide.is-active {
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+	}
+
+	/* --------------------------------------------------
+	 * Testimonial Typography: 26px Inter Display 500 White
+	 * -------------------------------------------------- */
+	.rec-quote-body {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		width: 100%;
+		max-width: 1280px;
+		margin-bottom: 40px;
+	}
+
+	.rec-quote-p {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 26px;
+		font-weight: 500;
+		line-height: 1.5;
+		color: #ffffff;
+		letter-spacing: -0.015em;
+		margin: 0;
+	}
+
+	/* --------------------------------------------------
+	 * Slide Footer: Profile Info (56px Profile Image)
+	 * -------------------------------------------------- */
+	.rec-slide-footer {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		width: 100%;
+		margin-top: 24px;
+	}
+
+	.rec-profile {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+	}
+
+	.profile-avatar {
+		width: 56px;
+		height: 56px;
+		border-radius: 50%;
+		object-fit: cover;
+		display: block;
+		background-color: #1c1c1c;
+		flex-shrink: 0;
+	}
+
+	.profile-details {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.profile-name-row {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.profile-name {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 16px;
+		font-weight: 500;
+		color: #ffffff;
+		letter-spacing: -0.01em;
+		white-space: nowrap;
+	}
+
+	.linkedin-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		color: #ffffff;
+		opacity: 0.85;
+		transition: opacity 0.15s ease;
+	}
+
+	.linkedin-link:hover {
+		opacity: 1;
+	}
+
+	.linkedin-icon {
+		width: 16px;
+		height: 16px;
+	}
+
+	.profile-role {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 1.4;
+		color: #a3a3a3; /* neutral-400 */
+		letter-spacing: -0.01em;
+		margin: 0;
+	}
+
+	/* --------------------------------------------------
+	 * Carousel Navigation Buttons (Bottom-Right)
+	 * -------------------------------------------------- */
+	.carousel-nav {
+		position: absolute;
+		bottom: 12px;
+		right: 0;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		z-index: 10;
+	}
+
+	.nav-btn {
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background-color: transparent;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		outline: none;
+		user-select: none;
+	}
+
+	/* Previous button subdued per screenshot */
+	.nav-btn-prev {
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		color: #737373;
+	}
+
+	.nav-btn-prev:hover {
+		border-color: rgba(255, 255, 255, 0.4);
+		color: #ffffff;
+	}
+
+	/* Next button prominent per screenshot */
+	.nav-btn-next {
+		border: 1px solid rgba(255, 255, 255, 0.45);
+		color: #ffffff;
+	}
+
+	.nav-btn-next:hover {
+		border-color: #ffffff;
+		background-color: rgba(255, 255, 255, 0.05);
+	}
+
+	.nav-btn:focus-visible {
+		outline: 2px solid var(--color-accent, #FF6E4E);
+		outline-offset: 2px;
+	}
+
+	/* --------------------------------------------------
+	 * Accessible Prefers-Reduced-Motion
+	 * -------------------------------------------------- */
+	@media (prefers-reduced-motion: reduce) {
+		.rec-slide {
+			animation: none !important;
+		}
+	}
+
+	/* --------------------------------------------------
+	 * Responsive Reflow
+	 * -------------------------------------------------- */
+	@media (max-width: 768px) {
+		.recommendations-header {
+			margin-bottom: 28px;
+		}
+
+		.rec-quote-body {
+			gap: 16px;
+			margin-bottom: 32px;
+		}
+
+		.rec-quote-p {
+			font-size: 19px;
+			line-height: 1.45;
+		}
+
+		.slides-container {
+			min-height: auto;
+		}
+
+		.rec-slide-footer {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 24px;
+			padding-bottom: 60px; /* Space for absolute navigation controls */
+		}
+
+		.profile-avatar {
+			width: 52px;
+			height: 52px;
+		}
+
+		.carousel-nav {
+			bottom: 0;
+			right: 0;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.rec-profile {
+			gap: 12px;
+		}
+
+		.profile-avatar {
+			width: 48px;
+			height: 48px;
+		}
+
+		.profile-name {
+			font-size: 15px;
+		}
+
+		.profile-role {
+			font-size: 13px;
+		}
+
+		.nav-btn {
+			width: 40px;
+			height: 40px;
+		}
+	}
+</style>

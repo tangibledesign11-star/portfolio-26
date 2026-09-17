@@ -1,0 +1,178 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import MusicWidget from '../components/MusicWidget.astro';
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+	image?: string;
+}
+
+const defaultTitle = 'Pushkar Saraf — Product Designer';
+const defaultDescription =
+	'Product designer working across design and implementation, shaping digital products through thoughtful decisions and practical making.';
+const defaultImage = '/images/Pushkar-Saraf.webp';
+
+const {
+	title = defaultTitle,
+	description = defaultDescription,
+	image = defaultImage,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="generator" content={Astro.generator} />
+
+		<title>{title}</title>
+		<meta name="description" content={description} />
+
+		<!-- Favicon derived from Pushkar-Saraf.webp -->
+		<link rel="icon" type="image/webp" href="/images/Pushkar-Saraf.webp" />
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" href="/favicon.png" />
+
+		<!-- Open Graph Metadata -->
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={image} />
+
+		<!-- Twitter / X Card Metadata -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={image} />
+
+		<!-- Preload primary font weights -->
+		<link
+			rel="preload"
+			href="/fonts/InterDisplay-Medium.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin="anonymous"
+		/>
+		<link
+			rel="preload"
+			href="/fonts/InterDisplay-Regular.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin="anonymous"
+		/>
+
+		<!-- Astro Native View Transitions Router -->
+		<ClientRouter />
+	</head>
+	<body>
+		<!-- Sticky Top Header (Announcement Banner + Navigation) -->
+		<header class="shell-sticky-header" transition:persist>
+			<div class="shell-banner-area">
+				<slot name="banner" />
+			</div>
+			<div class="shell-nav-area">
+				<slot name="nav" />
+			</div>
+		</header>
+
+		<div class="page-shell">
+			<!-- Main Content Area -->
+			<main class="shell-main-area">
+				<slot />
+			</main>
+
+			<!-- Footer Area -->
+			<footer class="shell-footer-area">
+				<slot name="footer" />
+			</footer>
+		</div>
+
+		<!-- Floating Music Player Widget -->
+		<MusicWidget />
+
+		<script>
+			import { initTextReveal } from '../scripts/textReveal';
+
+			let smoothScrollInitialized = false;
+			function setupSmoothScroll() {
+				if (smoothScrollInitialized) return;
+				smoothScrollInitialized = true;
+
+				document.addEventListener('click', (e) => {
+					const target = e.target as HTMLElement | null;
+					const anchor = target?.closest<HTMLAnchorElement>('a[href^="#"]');
+					if (!anchor) return;
+					const hash = anchor.getAttribute('href');
+					if (!hash || hash === '#' || hash.startsWith('#!')) return;
+
+					try {
+						const element = document.querySelector(hash);
+						if (element) {
+							e.preventDefault();
+							const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+							element.scrollIntoView({
+								behavior: prefersReduced ? 'auto' : 'smooth',
+								block: 'start',
+							});
+							history.pushState(null, '', hash);
+						}
+					} catch {
+						// Fall back to native anchor jump
+					}
+				});
+			}
+
+			function initPage() {
+				setupSmoothScroll();
+				initTextReveal();
+			}
+
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', initPage);
+			} else {
+				initPage();
+			}
+
+			document.addEventListener('astro:page-load', initPage);
+		</script>
+	</body>
+</html>
+
+<style>
+	.page-shell {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		background-color: var(--color-bg, #060606);
+		color: #ffffff;
+	}
+
+	.shell-sticky-header {
+		position: -webkit-sticky;
+		position: sticky;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 100;
+		width: 100%;
+	}
+
+	.shell-banner-area,
+	.shell-nav-area {
+		width: 100%;
+	}
+
+	.shell-main-area {
+		flex: 1 0 auto;
+		width: 100%;
+	}
+
+	.shell-footer-area {
+		width: 100%;
+	}
+</style>

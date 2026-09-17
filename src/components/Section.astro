@@ -1,0 +1,25 @@
+---
+interface Props {
+	bordered?: boolean;
+	class?: string;
+	id?: string;
+}
+
+const {
+	bordered = true,
+	class: className = '',
+	id,
+} = Astro.props;
+
+const classes = [
+	'section-spacing',
+	bordered ? 'section-bordered' : '',
+	className,
+]
+	.filter(Boolean)
+	.join(' ');
+---
+
+<section {id} class={classes}>
+	<slot />
+</section>

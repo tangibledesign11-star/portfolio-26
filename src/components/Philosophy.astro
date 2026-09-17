@@ -1,0 +1,227 @@
+---
+import Section from './Section.astro';
+import Container from './Container.astro';
+import Button from './Button.astro';
+
+interface Principle {
+	number: string;
+	title: string;
+}
+
+const principles: Principle[] = [
+	{
+		number: '01',
+		title: 'Start with the problem',
+	},
+	{
+		number: '02',
+		title: 'Make decisions with intention',
+	},
+	{
+		number: '03',
+		title: 'Move between thinking and making',
+	},
+	{
+		number: '04',
+		title: 'Carry the work forward',
+	},
+];
+---
+
+<Section id="philosophy" bordered={true} class="philosophy-section">
+	<Container>
+		<div class="philosophy-layout">
+			<!-- Left Column: Sticky on Desktop -->
+			<div class="philosophy-left">
+				<p class="text-eyebrow philosophy-eyebrow">Work philosophy</p>
+
+				<h2 class="text-h2 philosophy-title">
+					Thoughtful decisions.<br />
+					Practical making.
+				</h2>
+
+				<div class="philosophy-action">
+					<Button variant="primary" href="mailto:pushkars919@gmail.com">
+						Get in touch
+					</Button>
+				</div>
+			</div>
+
+			<!-- Right Column: Normal Page Flow -->
+			<div class="philosophy-right">
+				<!-- Introductory Paragraph -->
+				<p class="philosophy-intro">
+					Good digital products take more than polished interfaces. They need clear thinking, considered decisions, and a willingness to work through the details. The process can begin with a problem, an idea, a conversation, or something worth exploring — and evolve through design, experimentation, and making.
+				</p>
+
+				<!-- Numbered Principles List -->
+				<div class="principles-list" role="list">
+					{
+						principles.map((principle) => (
+							<article class="principle-item" role="listitem">
+								<span class="principle-number">[ {principle.number} ]</span>
+								<h3 class="principle-title">{principle.title}</h3>
+							</article>
+						))
+					}
+				</div>
+			</div>
+		</div>
+	</Container>
+</Section>
+
+<style>
+	/* --------------------------------------------------
+	 * Philosophy 12-Column Grid Layout
+	 * -------------------------------------------------- */
+	.philosophy-layout {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: 24px;
+		align-items: start;
+		width: 100%;
+	}
+
+	/* --------------------------------------------------
+	 * Left Column: Sticky on Desktop
+	 * top: 156px sits cleanly below the sticky top banner & nav
+	 * -------------------------------------------------- */
+	.philosophy-left {
+		grid-column: 1 / 7;
+		position: -webkit-sticky;
+		position: sticky;
+		top: 156px;
+		align-self: start;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		padding-right: 24px;
+	}
+
+	.philosophy-eyebrow {
+		margin: 0 0 24px 0;
+	}
+
+	.philosophy-title {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: clamp(38px, 4.5vw, 56px);
+		font-weight: 500;
+		line-height: 1.1;
+		letter-spacing: -0.015em;
+		color: #ffffff;
+		margin: 0 0 36px 0;
+	}
+
+	.philosophy-action {
+		display: flex;
+		align-items: center;
+	}
+
+	/* --------------------------------------------------
+	 * Right Column: Normal Document Flow
+	 * -------------------------------------------------- */
+	.philosophy-right {
+		grid-column: 7 / 13;
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		min-width: 0;
+	}
+
+	.philosophy-intro {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 18px;
+		line-height: 1.55;
+		color: #a3a3a3;
+		margin: 0 0 48px 0;
+		letter-spacing: -0.01em;
+	}
+
+	/* --------------------------------------------------
+	 * Principles List & Rows
+	 * -------------------------------------------------- */
+	.principles-list {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+	}
+
+	.principle-item {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		border-top: 1px solid var(--color-divider, #2B2B2B);
+		padding: 30px 0;
+	}
+
+	.principle-item:last-child {
+		border-bottom: 1px solid var(--color-divider, #2B2B2B);
+	}
+
+	.principle-number {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 1.2;
+		color: #737373; /* Tailwind neutral-500 secondary */
+		letter-spacing: -0.01em;
+		margin: 0 0 10px 0;
+		user-select: none;
+	}
+
+	.principle-title {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: clamp(22px, 2.2vw, 26px);
+		font-weight: 500;
+		line-height: 1.3;
+		color: #ffffff;
+		letter-spacing: -0.015em;
+		margin: 0;
+	}
+
+	/* --------------------------------------------------
+	 * Responsive Behavior
+	 * Removes sticky on mobile and stacks cleanly
+	 * -------------------------------------------------- */
+	@media (max-width: 992px) {
+		.philosophy-left {
+			grid-column: 1 / 6;
+			padding-right: 12px;
+		}
+
+		.philosophy-right {
+			grid-column: 6 / 13;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.philosophy-layout {
+			display: flex;
+			flex-direction: column;
+			gap: 48px;
+		}
+
+		.philosophy-left {
+			position: static;
+			top: auto;
+			width: 100%;
+			padding-right: 0;
+		}
+
+		.philosophy-title {
+			margin-bottom: 28px;
+		}
+
+		.philosophy-right {
+			width: 100%;
+		}
+
+		.philosophy-intro {
+			margin-bottom: 36px;
+		}
+
+		.principle-item {
+			padding: 24px 0;
+		}
+	}
+</style>

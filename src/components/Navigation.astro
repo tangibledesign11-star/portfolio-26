@@ -1,0 +1,506 @@
+---
+interface Props {
+	class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+const navLinks = [
+	{ label: 'Work', href: '#selected-work' },
+	{ label: 'Philosophy', href: '#philosophy' },
+	{ label: 'Challenges', href: '#design-challenges' },
+	{ label: 'Contact', href: '#contact' },
+	{
+		label: '[ Resume ]',
+		mobileLabel: 'Resume',
+		href: '/resume/Pushkar_Saraf_Senior_Product_Designer_2026.pdf',
+		download: 'Pushkar_Saraf_Senior_Product_Designer_2026.pdf',
+	},
+];
+const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
+---
+
+<nav class={`nav-wrapper ${className}`.trim()} aria-label="Main Navigation">
+	<div class="nav-container">
+		<!-- Brand Link -->
+		<a href="/" class="nav-brand">Portfolio'26</a>
+
+		<!-- Desktop Navigation Links (Hidden on mobile) -->
+		<ul class="nav-links" role="list">
+			{
+				navLinks.map((link) => {
+					const href = isHome || !link.href.startsWith('#') ? link.href : `/${link.href}`;
+					return (
+						<li>
+							<a
+								href={href}
+								class="nav-link"
+								download={'download' in link ? link.download : undefined}
+							>
+								{link.label}
+							</a>
+						</li>
+					);
+				})
+			}
+		</ul>
+
+		<!-- Mobile Menu Button (Lucide menu, hidden on desktop) -->
+		<button
+			type="button"
+			id="mobile-menu-toggle"
+			class="mobile-menu-toggle"
+			aria-label="Open navigation menu"
+			aria-expanded="false"
+			aria-controls="mobile-nav-overlay"
+		>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<line x1="4" x2="20" y1="12" y2="12"></line>
+				<line x1="4" x2="20" y1="6" y2="6"></line>
+				<line x1="4" x2="20" y1="18" y2="18"></line>
+			</svg>
+		</button>
+	</div>
+</nav>
+
+<!-- Full-Screen Mobile Navigation Overlay -->
+<div
+	id="mobile-nav-overlay"
+	class="mobile-nav-overlay"
+	role="dialog"
+	aria-modal="true"
+	aria-label="Mobile Navigation"
+	aria-hidden="true"
+>
+	<!-- Overlay Top Header Bar -->
+	<div class="mobile-nav-header">
+		<a href="/" class="nav-brand" id="mobile-overlay-brand">Portfolio'26</a>
+		<button
+			type="button"
+			id="mobile-menu-close"
+			class="mobile-menu-close"
+			aria-label="Close navigation menu"
+		>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<path d="M18 6 6 18"></path>
+				<path d="m6 6 12 12"></path>
+			</svg>
+		</button>
+	</div>
+
+	<!-- Overlay Menu Links Body -->
+	<div class="mobile-nav-body">
+		<ul class="mobile-nav-list" role="list">
+			{
+				navLinks.map((link) => {
+					const href = isHome || !link.href.startsWith('#') ? link.href : `/${link.href}`;
+					const label = link.mobileLabel || link.label;
+					return (
+						<li class="mobile-nav-item">
+							<a
+								href={href}
+								class="mobile-nav-link"
+								download={'download' in link ? link.download : undefined}
+							>
+								<span>{label}</span>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="18"
+									height="18"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									class="link-arrow"
+									aria-hidden="true"
+								>
+									<line x1="7" y1="17" x2="17" y2="7"></line>
+									<polyline points="7 7 17 7 17 17"></polyline>
+								</svg>
+							</a>
+						</li>
+					);
+				})
+			}
+		</ul>
+
+		<!-- Mobile Footer Note in Overlay -->
+		<div class="mobile-nav-footer">
+			<p class="mobile-location">Kolhapur • India (IST · UTC+05:30)</p>
+		</div>
+	</div>
+</div>
+
+<script>
+	function setupMobileNav() {
+		const toggleBtn = document.getElementById('mobile-menu-toggle');
+		const closeBtn = document.getElementById('mobile-menu-close');
+		const overlay = document.getElementById('mobile-nav-overlay');
+		const overlayBrand = document.getElementById('mobile-overlay-brand');
+
+		if (!toggleBtn || !closeBtn || !overlay) return;
+
+		// Prevent duplicate bindings on re-render / view transitions
+		if (toggleBtn.dataset.bound === 'true') return;
+		toggleBtn.dataset.bound = 'true';
+
+		function openMenu() {
+			overlay.classList.add('is-open');
+			overlay.setAttribute('aria-hidden', 'false');
+			toggleBtn.setAttribute('aria-expanded', 'true');
+			document.body.style.overflow = 'hidden';
+			document.documentElement.style.overflow = 'hidden';
+			closeBtn.focus();
+		}
+
+		function closeMenu() {
+			overlay.classList.remove('is-open');
+			overlay.setAttribute('aria-hidden', 'true');
+			toggleBtn.setAttribute('aria-expanded', 'false');
+			document.body.style.overflow = '';
+			document.documentElement.style.overflow = '';
+		}
+
+		toggleBtn.addEventListener('click', openMenu);
+		closeBtn.addEventListener('click', closeMenu);
+
+		if (overlayBrand) {
+			overlayBrand.addEventListener('click', closeMenu);
+		}
+
+		// Handle navigation links inside overlay
+		const links = overlay.querySelectorAll('.mobile-nav-link');
+		links.forEach((link) => {
+			link.addEventListener('click', () => {
+				closeMenu();
+			});
+		});
+
+		// Close on Escape key
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape' && overlay.classList.contains('is-open')) {
+				closeMenu();
+				toggleBtn.focus();
+			}
+		});
+
+		// Ensure overlay closes before view transition
+		document.addEventListener('astro:before-preparation', closeMenu);
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', setupMobileNav);
+	} else {
+		setupMobileNav();
+	}
+
+	document.addEventListener('astro:page-load', setupMobileNav);
+</script>
+
+<style>
+	/* --------------------------------------------------
+	 * Desktop Navigation Header
+	 * -------------------------------------------------- */
+	.nav-wrapper {
+		width: 100%;
+		background-color: var(--color-bg, #060606);
+		padding: 24px 80px;
+		box-sizing: border-box;
+	}
+
+	.nav-container {
+		width: 100%;
+		max-width: var(--max-content-width, 1280px);
+		margin: 0 auto;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.nav-brand {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 16px;
+		font-weight: 500;
+		color: #ffffff;
+		text-decoration: none;
+		letter-spacing: -0.01em;
+		white-space: nowrap;
+		transition: opacity 0.15s ease;
+	}
+
+	.nav-brand:hover {
+		opacity: 0.85;
+	}
+
+	.nav-links {
+		display: flex;
+		align-items: center;
+		gap: 32px;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.nav-link {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 16px;
+		font-weight: 500;
+		color: #ffffff;
+		text-decoration: none;
+		letter-spacing: -0.01em;
+		white-space: nowrap;
+		transition: opacity 0.15s ease;
+	}
+
+	.nav-link:hover {
+		opacity: 0.8;
+	}
+
+	/* Mobile Toggle Button - Hidden by default on Desktop */
+	.mobile-menu-toggle {
+		display: none;
+		background: transparent;
+		border: none;
+		color: #ffffff;
+		padding: 6px;
+		cursor: pointer;
+		align-items: center;
+		justify-content: center;
+		border-radius: 4px;
+		transition: opacity 0.15s ease;
+	}
+
+	.mobile-menu-toggle:hover {
+		opacity: 0.85;
+	}
+
+	.mobile-menu-toggle:focus-visible {
+		outline: 2px solid var(--color-accent, #FF6E4E);
+		outline-offset: 2px;
+	}
+
+	/* --------------------------------------------------
+	 * Mobile Navigation Overlay (Full Screen)
+	 * Fully hidden on load, only active when .is-open
+	 * -------------------------------------------------- */
+	.mobile-nav-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		width: 100vw;
+		height: 100vh;
+		height: 100dvh;
+		background-color: var(--color-bg, #060606);
+		z-index: 99999;
+		display: flex;
+		flex-direction: column;
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transform: translateY(-8px);
+		transition:
+			opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+			transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+			visibility 0.28s ease;
+		box-sizing: border-box;
+	}
+
+	.mobile-nav-overlay.is-open {
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+		transform: translateY(0);
+	}
+
+	.mobile-nav-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 20px 20px;
+		border-bottom: 1px solid var(--color-divider, #2B2B2B);
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	.mobile-menu-close {
+		background: transparent;
+		border: none;
+		color: #ffffff;
+		padding: 6px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 4px;
+		transition: opacity 0.15s ease;
+	}
+
+	.mobile-menu-close:hover {
+		opacity: 0.8;
+	}
+
+	.mobile-menu-close:focus-visible {
+		outline: 2px solid var(--color-accent, #FF6E4E);
+		outline-offset: 2px;
+	}
+
+	.mobile-nav-body {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		padding: 32px 20px 28px 20px;
+		overflow-y: auto;
+		box-sizing: border-box;
+	}
+
+	.mobile-nav-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+	}
+
+	.mobile-nav-item {
+		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		opacity: 0;
+		transform: translateY(10px);
+		transition:
+			opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+			transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.mobile-nav-overlay.is-open .mobile-nav-item {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	.mobile-nav-overlay.is-open .mobile-nav-item:nth-child(1) { transition-delay: 0.04s; }
+	.mobile-nav-overlay.is-open .mobile-nav-item:nth-child(2) { transition-delay: 0.08s; }
+	.mobile-nav-overlay.is-open .mobile-nav-item:nth-child(3) { transition-delay: 0.12s; }
+	.mobile-nav-overlay.is-open .mobile-nav-item:nth-child(4) { transition-delay: 0.16s; }
+	.mobile-nav-overlay.is-open .mobile-nav-item:nth-child(5) { transition-delay: 0.20s; }
+
+	.mobile-nav-link {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 26px;
+		font-weight: 500;
+		color: #ffffff;
+		text-decoration: none;
+		letter-spacing: -0.015em;
+		padding: 18px 0;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		transition: color 0.15s ease, opacity 0.15s ease;
+	}
+
+	.mobile-nav-link:hover {
+		color: var(--color-accent, #FF6E4E);
+	}
+
+	.mobile-nav-link .link-arrow {
+		color: #737373;
+		transition: transform 0.15s ease, color 0.15s ease;
+	}
+
+	.mobile-nav-link:hover .link-arrow {
+		color: var(--color-accent, #FF6E4E);
+		transform: translate(2px, -2px);
+	}
+
+	.mobile-nav-footer {
+		padding-top: 24px;
+		opacity: 0;
+		transform: translateY(8px);
+		transition:
+			opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+			transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.mobile-nav-overlay.is-open .mobile-nav-footer {
+		opacity: 1;
+		transform: translateY(0);
+		transition-delay: 0.24s;
+	}
+
+	.mobile-location {
+		font-family: var(--font-primary, 'Inter Display', sans-serif);
+		font-size: 13px;
+		color: #737373;
+		margin: 0;
+		letter-spacing: -0.01em;
+	}
+
+	/* --------------------------------------------------
+	 * Responsive Breakpoints
+	 * -------------------------------------------------- */
+	@media (max-width: 768px) {
+		.nav-wrapper {
+			padding: 20px 20px;
+		}
+
+		.nav-container {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: center;
+			width: 100%;
+		}
+
+		.nav-links {
+			display: none !important;
+		}
+
+		.mobile-menu-toggle {
+			display: inline-flex !important;
+		}
+	}
+
+	@media (min-width: 769px) {
+		.mobile-menu-toggle {
+			display: none !important;
+		}
+
+		.mobile-nav-overlay {
+			display: none !important;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.mobile-nav-overlay,
+		.mobile-nav-item,
+		.mobile-nav-footer {
+			transition: none !important;
+			transform: none !important;
+		}
+	}
+</style>
