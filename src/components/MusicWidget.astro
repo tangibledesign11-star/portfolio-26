@@ -112,6 +112,8 @@ const {
 </aside>
 
 <script>
+	type Corner = 'bottom-left' | 'bottom-right' | 'top-right' | 'top-left';
+
 	function setupMusicWidget() {
 		const widget = document.getElementById('music-widget');
 		if (!widget || widget.dataset.initialized === 'true') return;
@@ -134,8 +136,250 @@ const {
 			}
 		}
 
+		// --------------------------------------------------
+		// Drag & 4-Corner Snapping System
+		// --------------------------------------------------
+		let currentCorner: Corner = 'bottom-left';
+		try {
+			const saved = sessionStorage.getItem('music-widget-corner') as Corner | null;
+			if (saved && ['bottom-left', 'bottom-right', 'top-right', 'top-left'].includes(saved)) {
+				currentCorner = saved;
+			}
+		} catch (_) {}
+
+		let currentX = 0;
+		let currentY = 0;
+		let isDragging = false;
+		let hasMoved = false;
+		let startPointerX = 0;
+		let startPointerY = 0;
+		let startWidgetX = 0;
+		let startWidgetY = 0;
+		let justDragged = false;
+		let justDraggedTimeout: number | undefined;
+
+		let lastPointerX = 0;
+		let lastPointerY = 0;
+		let lastTime = 0;
+		let velocityX = 0;
+		let velocityY = 0;
+
+		function getMargin(): number {
+			return window.innerWidth <= 768 ? 16 : 24;
+		}
+
+		function getHeaderBottom(): number {
+			const header = document.querySelector('.shell-sticky-header') as HTMLElement | null;
+			if (header) {
+				const rect = header.getBoundingClientRect();
+				if (rect.height > 0) {
+					return rect.bottom;
+				}
+			}
+			return window.innerWidth <= 768 ? 64 : 72;
+		}
+
+		function getCornerCoordinates(corner: Corner): { x: number; y: number } {
+			if (!widget) return { x: 24, y: 24 };
+			const margin = getMargin();
+			const headerBottom = getHeaderBottom();
+			const w = widget.offsetWidth || 48;
+			const h = widget.offsetHeight || 48;
+			const vw = window.innerWidth;
+			const vh = window.innerHeight;
+
+			// Top corners always sit below the navigation bar
+			const topY = headerBottom + margin;
+			const bottomY = Math.max(topY, vh - h - margin);
+
+			switch (corner) {
+				case 'top-left':
+					return { x: margin, y: topY };
+				case 'top-right':
+					return { x: Math.max(margin, vw - w - margin), y: topY };
+				case 'bottom-right':
+					return {
+						x: Math.max(margin, vw - w - margin),
+						y: bottomY,
+					};
+				case 'bottom-left':
+				default:
+					return {
+						x: margin,
+						y: bottomY,
+					};
+			}
+		}
+
+		function snapToCorner(corner: Corner, animate = true) {
+			if (!widget) return;
+			currentCorner = corner;
+			try {
+				sessionStorage.setItem('music-widget-corner', corner);
+			} catch (_) {}
+
+			const coords = getCornerCoordinates(corner);
+			currentX = coords.x;
+			currentY = coords.y;
+
+			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+			if (animate && !prefersReducedMotion) {
+				widget.classList.add('is-snapping');
+			} else {
+				widget.classList.remove('is-snapping');
+			}
+
+			widget.style.transform = `translate3d(${coords.x}px, ${coords.y}px, 0)`;
+		}
+
+		// Position immediately at active corner
+		snapToCorner(currentCorner, false);
+
+		// Pointer Events for Draggable Behavior
+		widget.addEventListener('pointerdown', (e) => {
+			if (e.button !== 0) return;
+			// Close button handles its own click without initiating drag
+			if ((e.target as HTMLElement).closest('#music-close-btn')) return;
+
+			isDragging = false;
+			hasMoved = false;
+			startPointerX = e.clientX;
+			startPointerY = e.clientY;
+			startWidgetX = currentX;
+			startWidgetY = currentY;
+
+			lastPointerX = e.clientX;
+			lastPointerY = e.clientY;
+			lastTime = performance.now();
+			velocityX = 0;
+			velocityY = 0;
+
+			widget.setPointerCapture(e.pointerId);
+		});
+
+		widget.addEventListener('pointermove', (e) => {
+			if (!widget.hasPointerCapture(e.pointerId)) return;
+
+			const dx = e.clientX - startPointerX;
+			const dy = e.clientY - startPointerY;
+
+			if (!hasMoved) {
+				if (Math.hypot(dx, dy) > 5) {
+					hasMoved = true;
+					isDragging = true;
+					widget.classList.remove('is-snapping');
+					widget.classList.add('is-dragging');
+				}
+			}
+
+			if (isDragging) {
+				const now = performance.now();
+				const dt = now - lastTime;
+				if (dt > 10) {
+					velocityX = (e.clientX - lastPointerX) / dt;
+					velocityY = (e.clientY - lastPointerY) / dt;
+					lastPointerX = e.clientX;
+					lastPointerY = e.clientY;
+					lastTime = now;
+				}
+
+				const margin = 8;
+				const headerBottom = getHeaderBottom();
+				const w = widget.offsetWidth || 48;
+				const h = widget.offsetHeight || 48;
+				const minX = margin;
+				const maxX = Math.max(margin, window.innerWidth - w - margin);
+				// Widget stays below the navigation bar even while dragging
+				const minY = headerBottom + margin;
+				const maxY = Math.max(minY, window.innerHeight - h - margin);
+
+				currentX = Math.max(minX, Math.min(maxX, startWidgetX + dx));
+				currentY = Math.max(minY, Math.min(maxY, startWidgetY + dy));
+
+				widget.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+			}
+		});
+
+		function handlePointerEnd(e: PointerEvent) {
+			if (!widget || !widget.hasPointerCapture(e.pointerId)) return;
+			try {
+				widget.releasePointerCapture(e.pointerId);
+			} catch (_) {}
+
+			if (isDragging) {
+				isDragging = false;
+				widget.classList.remove('is-dragging');
+
+				justDragged = true;
+				if (justDraggedTimeout) clearTimeout(justDraggedTimeout);
+				justDraggedTimeout = window.setTimeout(() => {
+					justDragged = false;
+				}, 100);
+
+				const w = widget.offsetWidth || 48;
+				const h = widget.offsetHeight || 48;
+				const centerX = currentX + w / 2;
+				const centerY = currentY + h / 2;
+
+				const margin = getMargin();
+				const headerBottom = getHeaderBottom();
+				const topY = headerBottom + margin;
+				const bottomY = Math.max(topY, window.innerHeight - h - margin);
+				const verticalMidpoint = (topY + bottomY) / 2;
+
+				let isLeft = centerX < window.innerWidth / 2;
+				let isTop = centerY < verticalMidpoint;
+
+				// Subtle velocity-assisted snapping
+				if (Math.abs(velocityX) > 0.45) {
+					isLeft = velocityX < 0;
+				}
+				if (Math.abs(velocityY) > 0.45) {
+					isTop = velocityY < 0;
+				}
+
+				const targetCorner: Corner = isTop
+					? (isLeft ? 'top-left' : 'top-right')
+					: (isLeft ? 'bottom-left' : 'bottom-right');
+
+				snapToCorner(targetCorner, true);
+			}
+		}
+
+		widget.addEventListener('pointerup', handlePointerEnd);
+		widget.addEventListener('pointercancel', handlePointerEnd);
+
+		widget.addEventListener('transitionend', (e) => {
+			if (e.propertyName === 'transform') {
+				widget.classList.remove('is-snapping');
+			}
+		});
+
+		// Keep widget in its corner on window resize or orientation changes
+		window.addEventListener('resize', () => {
+			if (!isDragging) {
+				snapToCorner(currentCorner, false);
+			}
+		});
+
+		// Observe header size changes (e.g. announcement banner entering after 2s)
+		const headerEl = document.querySelector('.shell-sticky-header');
+		if (headerEl && typeof ResizeObserver !== 'undefined') {
+			const ro = new ResizeObserver(() => {
+				if (!isDragging && (currentCorner === 'top-left' || currentCorner === 'top-right')) {
+					snapToCorner(currentCorner, true);
+				}
+			});
+			ro.observe(headerEl);
+		}
+
 		// Play / Pause toggle
-		playBtn.addEventListener('click', async () => {
+		playBtn.addEventListener('click', async (e) => {
+			if (justDragged) {
+				e.preventDefault();
+				e.stopPropagation();
+				return;
+			}
 			if (audio.paused) {
 				try {
 					await audio.play();
@@ -153,8 +397,13 @@ const {
 		audio.addEventListener('pause', () => updatePlaybackState(false));
 		audio.addEventListener('ended', () => updatePlaybackState(false));
 
-		// Close button removes widget from view for the current page view
-		closeBtn.addEventListener('click', () => {
+		// Close button removes widget from view
+		closeBtn.addEventListener('pointerdown', (e) => {
+			e.stopPropagation();
+		});
+
+		closeBtn.addEventListener('click', (e) => {
+			e.stopPropagation();
 			audio.pause();
 			widget.style.display = 'none';
 		});
@@ -172,22 +421,47 @@ const {
 <style>
 	/* --------------------------------------------------
 	 * Floating Music Widget Placement
-	 * Bottom-left of viewport, above content
+	 * Draggable with snapping to 4 viewport corners
 	 * -------------------------------------------------- */
 	.music-widget {
 		position: fixed;
-		bottom: 24px;
-		left: 24px;
-		z-index: 90;
+		top: 0;
+		left: 0;
+		z-index: 9999;
 		display: block;
 		user-select: none;
+		touch-action: none;
+		cursor: grab;
+		/* Initial fallback before hydration: bottom-left */
+		transform: translate3d(24px, calc(100vh - 48px - 24px), 0);
+		transform: translate3d(24px, calc(100dvh - 48px - 24px), 0);
+		will-change: transform;
 	}
 
 	@media (max-width: 768px) {
 		.music-widget {
-			bottom: 16px;
-			left: 16px;
+			transform: translate3d(16px, calc(100vh - 48px - 16px), 0);
+			transform: translate3d(16px, calc(100dvh - 48px - 16px), 0);
 		}
+	}
+
+	.music-widget.is-dragging {
+		cursor: grabbing;
+		transition: none !important;
+	}
+
+	.music-widget.is-snapping {
+		transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.15);
+	}
+
+	.music-widget.is-dragging .cover-wrapper {
+		transform: scale(1.08);
+	}
+
+	.music-widget.is-dragging .cover-disc {
+		box-shadow:
+			0 14px 28px rgba(0, 0, 0, 0.75),
+			0 0 0 1.5px rgba(255, 255, 255, 0.22);
 	}
 
 	/* --------------------------------------------------
@@ -201,6 +475,7 @@ const {
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		transition: transform 0.2s ease;
 	}
 
 	.cover-disc {
@@ -333,6 +608,12 @@ const {
 	@media (prefers-reduced-motion: reduce) {
 		.cover-disc {
 			animation: none !important;
+		}
+		.music-widget.is-snapping {
+			transition: none !important;
+		}
+		.cover-wrapper {
+			transition: none !important;
 		}
 	}
 </style>
