@@ -75,6 +75,10 @@ const { class: className = '' } = Astro.props;
 	 * Row 1: Main content (Columns 1–8)
 	 * Row 2: Shared horizontal row (Role pill + 4-col Profile block)
 	 * -------------------------------------------------- */
+	:global(.hero-section) {
+		margin-top: -1px;
+	}
+
 	.hero-layout {
 		display: flex;
 		flex-direction: column;

@@ -70,14 +70,8 @@ const initialDate = dateFormatter.format(now);
 					<p class="info-detail">September 2026</p>
 				</div>
 
-				<!-- Column 2: Response Time -->
+				<!-- Column 2: Social Links -->
 				<div class="info-col info-col-2">
-					<h3 class="info-heading">Response time</h3>
-					<p class="info-detail">Within 1 hour</p>
-				</div>
-
-				<!-- Column 3: Social Links -->
-				<div class="info-col info-col-3">
 					<h3 class="info-heading">Social</h3>
 					<div class="detail-list">
 						{
@@ -95,13 +89,51 @@ const initialDate = dateFormatter.format(now);
 					</div>
 				</div>
 
-				<!-- Column 4: Local Time (India Standard Time) -->
-				<div class="info-col info-col-4">
+				<!-- Column 3: Local Time (India Standard Time) -->
+				<div class="info-col info-col-3">
 					<h3 class="info-heading">Local time</h3>
 					<div class="detail-list">
 						<p class="clock-display" id="footer-live-clock">{initialTime}</p>
 						<p class="info-detail" id="footer-live-date">{initialDate}</p>
 						<p class="info-detail">IST · UTC+05:30</p>
+					</div>
+				</div>
+
+				<!-- Column 4: Designed in / Built with -->
+				<div class="info-col info-col-4">
+					<div class="credits-group">
+						<div class="credit-row">
+							<span class="info-heading credit-label">Designed in</span>
+							<img
+								src="/images/figma-logo.png"
+								alt="Figma"
+								class="footer-logo figma-logo"
+								width="11"
+								height="16"
+								loading="lazy"
+							/>
+						</div>
+						<div class="credit-row">
+							<span class="info-heading credit-label">Built with</span>
+							<div class="credit-logos">
+								<img
+									src="/images/antigravity-logo.png"
+									alt="Antigravity"
+									class="footer-logo antigravity-logo"
+									width="20"
+									height="20"
+									loading="lazy"
+								/>
+								<img
+									src="/images/chatgpt-logo.png"
+									alt="ChatGPT"
+									class="footer-logo chatgpt-logo"
+									width="16"
+									height="16"
+									loading="lazy"
+								/>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -301,6 +333,54 @@ const initialDate = dateFormatter.format(now);
 
 	.info-link:hover {
 		color: #ffffff;
+	}
+
+	/* --------------------------------------------------
+	 * Credits Column (Designed in / Built with)
+	 * -------------------------------------------------- */
+	.credits-group {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.credit-row {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+
+	.credit-label {
+		margin: 0;
+	}
+
+	.credit-logos {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	.footer-logo {
+		display: inline-block;
+		object-fit: contain;
+		vertical-align: middle;
+		flex-shrink: 0;
+	}
+
+	.figma-logo {
+		height: 16px;
+		width: auto;
+	}
+
+	.antigravity-logo {
+		height: 20px;
+		width: auto;
+	}
+
+	.chatgpt-logo {
+		height: 16px;
+		width: auto;
 	}
 
 	/* --------------------------------------------------
