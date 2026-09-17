@@ -6,7 +6,9 @@ export interface Project {
 	direction: string;
 	image: string;
 	alt: string;
-	href: string;
+	href?: string;
+	buttonLabel?: string;
+	disabled?: boolean;
 }
 
 export const projects: Project[] = [
@@ -35,7 +37,7 @@ export const projects: Project[] = [
 		title: 'SureContact',
 		meta: 'B2B · SaaS · Email marketing · Lightweight CRM',
 		description: 'An email marketing platform and lightweight CRM designed around simplicity, speed, and usability.',
-		direction: 'Lead product designer · AI-assisted implementation',
+		direction: 'Product designer · AI-assisted implementation',
 		image: '/images/SureContact.webp',
 		alt: 'SureContact — Email marketing and lightweight CRM dashboard',
 		href: '/work/surecontact',
@@ -45,7 +47,7 @@ export const projects: Project[] = [
 		title: 'Ottokit',
 		meta: 'B2B · SaaS · Workflow automation · Integrations',
 		description: 'A workflow automation platform for building multi-step flows across apps and integrations.',
-		direction: 'Lead product designer',
+		direction: 'Product designer',
 		image: '/images/OttoKit.webp',
 		alt: 'Ottokit — Workflow automation and integrations platform',
 		href: '/work/ottokit',
@@ -55,9 +57,10 @@ export const projects: Project[] = [
 		title: 'Staffing platform',
 		meta: 'B2B · Staffing platform · Internal product · Early-stage commercialization',
 		description: 'A staffing platform for sourcing and managing candidates across global markets.',
-		direction: 'Lead product designer',
-		image: '/images/Pottr.webp',
+		direction: 'Product designer',
+		image: '/images/Xseed.webp',
 		alt: 'Staffing platform — Candidate sourcing and management interface',
-		href: '#staffing-platform',
+		buttonLabel: 'Coming soon',
+		disabled: true,
 	},
 ];

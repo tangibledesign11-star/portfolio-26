@@ -45,9 +45,26 @@ import { projects } from '../data/projects';
 									<p class="card-direction">{project.direction}</p>
 								</div>
 								<div class="card-action">
-									<Button variant="outlined" href={project.href} class="project-btn">
-										View Project
-									</Button>
+									{
+										project.disabled ? (
+											<Button
+												variant="outlined"
+												disabled
+												class="project-btn is-disabled"
+												aria-disabled="true"
+											>
+												{project.buttonLabel || 'Coming soon'}
+											</Button>
+										) : (
+											<Button
+												variant="outlined"
+												href={project.href}
+												class="project-btn"
+											>
+												{project.buttonLabel || 'View Project'}
+											</Button>
+										)
+									}
 								</div>
 							</div>
 						</article>
@@ -242,11 +259,20 @@ import { projects } from '../data/projects';
 		padding-top: 2px;
 	}
 
-	/* Compact "View Project" button */
+	/* Compact "View Project" / "Coming soon" button */
 	:global(.project-btn) {
 		font-size: 14px !important;
 		padding: 7px 16px !important;
 		white-space: nowrap !important;
+	}
+
+	:global(.project-btn:disabled),
+	:global(.project-btn.is-disabled) {
+		opacity: 0.45 !important;
+		cursor: not-allowed !important;
+		pointer-events: none !important;
+		border-color: rgba(255, 255, 255, 0.25) !important;
+		color: #a3a3a3 !important;
 	}
 
 	/* --------------------------------------------------

@@ -11,9 +11,9 @@ interface Props {
 
 const { currentSlug, class: className = '' } = Astro.props;
 
-// Filter out the current project and show only the first two remaining projects
+// Filter out current and disabled projects, showing the first two available case studies
 const upNextProjects = projects
-	.filter((project) => project.slug !== currentSlug)
+	.filter((project) => project.slug !== currentSlug && !project.disabled)
 	.slice(0, 2);
 ---
 
