@@ -26,77 +26,109 @@ import { projects } from '../data/projects';
 				{/* Cards 1 to 5: Standard Project Cards */}
 				{
 					projects.map((project) => (
-						<article class="project-card">
-							<div class="card-media">
-								<img
-									src={project.image}
-									alt={project.alt}
-									width="1260"
-									height="756"
-									loading="lazy"
-									decoding="async"
-									class="card-image"
-								/>
-							</div>
-							<div class="card-body">
-								<div class="card-info">
-									<p class="card-meta">[ {project.meta} ]</p>
-									<p class="card-description">{project.description}</p>
-									<p class="card-direction">{project.direction}</p>
-								</div>
-								<div class="card-action">
-									{
-										project.disabled ? (
-											<Button
-												variant="outlined"
-												disabled
-												class="project-btn is-disabled"
-												aria-disabled="true"
-											>
-												{project.buttonLabel || 'Coming soon'}
-											</Button>
-										) : (
-											<Button
-												variant="outlined"
-												href={project.href}
-												class="project-btn"
-											>
-												{project.buttonLabel || 'View Project'}
-											</Button>
-										)
-									}
-								</div>
-							</div>
+						<article class={`project-card ${project.disabled ? 'is-disabled' : 'is-clickable'}`}>
+							{
+								project.disabled ? (
+									<div class="project-card-inner">
+										<div class="card-media">
+											<img
+												src={project.image}
+												alt={project.alt}
+												width="1260"
+												height="756"
+												loading="lazy"
+												decoding="async"
+												class="card-image"
+											/>
+										</div>
+										<div class="card-body">
+											<div class="card-info">
+												<p class="card-meta">[ {project.meta} ]</p>
+												<p class="card-description">{project.description}</p>
+												<p class="card-direction">{project.direction}</p>
+											</div>
+											<div class="card-action">
+												<Button
+													variant="outlined"
+													disabled
+													class="project-btn is-disabled"
+													aria-disabled="true"
+												>
+													{project.buttonLabel || 'Coming soon'}
+												</Button>
+											</div>
+										</div>
+									</div>
+								) : (
+									<div class="project-card-inner">
+										<a
+											href={project.href}
+											class="card-overlay-link"
+											aria-label={`View project: ${project.title} — ${project.description}`}
+											tabindex="-1"
+										/>
+										<div class="card-media">
+											<img
+												src={project.image}
+												alt={project.alt}
+												width="1260"
+												height="756"
+												loading="lazy"
+												decoding="async"
+												class="card-image"
+											/>
+										</div>
+										<div class="card-body">
+											<div class="card-info">
+												<p class="card-meta">[ {project.meta} ]</p>
+												<p class="card-description">{project.description}</p>
+												<p class="card-direction">{project.direction}</p>
+											</div>
+											<div class="card-action">
+												<Button
+													variant="outlined"
+													href={project.href}
+													class="project-btn"
+												>
+													{project.buttonLabel || 'View Project'}
+												</Button>
+											</div>
+										</div>
+									</div>
+								)
+							}
 						</article>
 					))
 				}
 
 				{/* Card 6: Good product work CTA Card */}
 				<article class="project-card cta-card">
-					<div class="card-media">
-						<img
-							src="/images/CTA.webp"
-							alt="Intentionality, Curiosity, Craft principles"
-							width="1260"
-							height="756"
-							loading="lazy"
-							decoding="async"
-							class="card-image"
-						/>
-					</div>
-					<div class="card-body cta-card-body">
-						<div class="card-info cta-info">
-							<p class="card-description cta-title">
-								Good product work needs clear thinking, meaningful ownership, and careful execution.
-							</p>
-							<p class="cta-support">
-								Open to working with teams and people who value clear thinking, meaningful ownership, and well-made digital products.
-							</p>
+					<div class="project-card-inner">
+						<div class="card-media">
+							<img
+								src="/images/CTA.webp"
+								alt="Intentionality, Curiosity, Craft principles"
+								width="1260"
+								height="756"
+								loading="lazy"
+								decoding="async"
+								class="card-image"
+							/>
 						</div>
-						<div class="card-action cta-action">
-							<Button variant="primary" href="mailto:pushkars919@gmail.com" class="cta-btn">
-								Get in touch
-							</Button>
+						<div class="card-body cta-card-body">
+							<div class="card-info cta-info">
+								<p class="card-description cta-title">
+									Good product work needs clear thinking, meaningful ownership, and careful execution.
+								</p>
+								<p class="cta-support">
+									Open to working with teams and people who value clear thinking, meaningful ownership, and well-made digital products.
+								</p>
+							</div>
+							<div class="card-action cta-action">
+								<Button variant="primary" href="mailto:pushkars919@gmail.com" class="cta-btn">
+									Get in touch
+								</Button>
+							</div>
 						</div>
 					</div>
 				</article>
@@ -187,11 +219,41 @@ import { projects } from '../data/projects';
 		min-width: 0;
 	}
 
+	.project-card-inner {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		height: 100%;
+	}
+
+	/* Whole card click overlay for non-disabled cards */
+	.card-overlay-link {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		cursor: pointer;
+	}
+
+	.project-card.is-disabled {
+		cursor: default;
+	}
+
+	.project-card.is-disabled .card-media,
+	.project-card.is-disabled .card-body {
+		pointer-events: none;
+	}
+
 	.card-media {
 		width: 100%;
 		overflow: hidden;
 		border-radius: 8px; /* Clean corner radius matching reference */
 		background-color: #121212;
+		transition: opacity 0.2s ease;
+	}
+
+	.project-card.is-clickable:hover .card-media {
+		opacity: 0.93;
 	}
 
 	.card-image {
@@ -201,6 +263,11 @@ import { projects } from '../data/projects';
 		object-fit: cover;
 		display: block;
 		border-radius: 8px;
+		transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.project-card.is-clickable:hover .card-image {
+		transform: scale(1.015);
 	}
 
 	/* --------------------------------------------------
@@ -255,6 +322,8 @@ import { projects } from '../data/projects';
 	}
 
 	.card-action {
+		position: relative;
+		z-index: 2;
 		flex-shrink: 0;
 		padding-top: 2px;
 	}

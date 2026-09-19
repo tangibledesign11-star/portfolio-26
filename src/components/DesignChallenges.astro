@@ -73,33 +73,43 @@ const challenges: Challenge[] = [
 			<div class="challenges-grid">
 				{
 					challenges.map((challenge) => (
-						<article class="challenge-card">
-							<div class="card-media">
-								<img
-									src={challenge.image}
-									alt={challenge.alt}
-									width="1260"
-									height="756"
-									loading="lazy"
-									decoding="async"
-									class="card-image"
+						<article class="challenge-card is-clickable">
+							<div class="challenge-card-inner">
+								<a
+									href={challenge.href}
+									target="_blank"
+									rel="noopener noreferrer"
+									class="card-overlay-link"
+									aria-label={`${challenge.action}: ${challenge.title} — ${challenge.description}`}
+									tabindex="-1"
 								/>
-							</div>
-							<div class="card-body">
-								<div class="card-info">
-									<p class="card-meta">[ {challenge.meta} ]</p>
-									<p class="card-description">{challenge.description}</p>
+								<div class="card-media">
+									<img
+										src={challenge.image}
+										alt={challenge.alt}
+										width="1260"
+										height="756"
+										loading="lazy"
+										decoding="async"
+										class="card-image"
+									/>
 								</div>
-								<div class="card-action">
-									<Button
-										variant="outlined"
-										href={challenge.href}
-										target="_blank"
-										rel="noopener noreferrer"
-										class="challenge-btn"
-									>
-										{challenge.action}
-									</Button>
+								<div class="card-body">
+									<div class="card-info">
+										<p class="card-meta">[ {challenge.meta} ]</p>
+										<p class="card-description">{challenge.description}</p>
+									</div>
+									<div class="card-action">
+										<Button
+											variant="outlined"
+											href={challenge.href}
+											target="_blank"
+											rel="noopener noreferrer"
+											class="challenge-btn"
+										>
+											{challenge.action}
+										</Button>
+									</div>
 								</div>
 							</div>
 						</article>
@@ -193,11 +203,32 @@ const challenges: Challenge[] = [
 		min-width: 0;
 	}
 
+	.challenge-card-inner {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		height: 100%;
+	}
+
+	/* Whole card click overlay */
+	.card-overlay-link {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		cursor: pointer;
+	}
+
 	.card-media {
 		width: 100%;
 		overflow: hidden;
 		border-radius: 8px; /* Clean corner radius matching reference */
 		background-color: #121212;
+		transition: opacity 0.2s ease;
+	}
+
+	.challenge-card.is-clickable:hover .card-media {
+		opacity: 0.93;
 	}
 
 	.card-image {
@@ -207,6 +238,11 @@ const challenges: Challenge[] = [
 		object-fit: cover;
 		display: block;
 		border-radius: 8px;
+		transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.challenge-card.is-clickable:hover .card-image {
+		transform: scale(1.015);
 	}
 
 	/* --------------------------------------------------
@@ -251,6 +287,8 @@ const challenges: Challenge[] = [
 	}
 
 	.card-action {
+		position: relative;
+		z-index: 2;
 		flex-shrink: 0;
 		padding-top: 2px;
 	}

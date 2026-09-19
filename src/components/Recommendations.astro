@@ -188,23 +188,93 @@ const recommendations: Recommendation[] = [
 			autoplayTimer = null;
 		}
 
-		const slides = container.querySelectorAll<HTMLElement>('.rec-slide');
+		// Prevent duplicate event listener bindings across page transitions or duplicate calls
+		if (container.dataset.initialized === 'true') {
+			return;
+		}
+		container.dataset.initialized = 'true';
+
+		const slides = Array.from(container.querySelectorAll<HTMLElement>('.rec-slide'));
 		const prevBtn = document.getElementById('rec-prev-btn');
 		const nextBtn = document.getElementById('rec-next-btn');
 		const numberEl = document.getElementById('rec-active-number');
 
 		if (!slides.length || !prevBtn || !nextBtn || !numberEl) return;
 
-		let currentIndex = 0;
 		const totalSlides = slides.length;
+		// Initialize currentIndex based on existing DOM state
+		let activeIdx = slides.findIndex((s) => s.classList.contains('is-active'));
+		let currentIndex = activeIdx >= 0 ? activeIdx : 0;
+		let isTransitioning = false;
+		let transitionTimeout: ReturnType<typeof setTimeout> | null = null;
 
-		function updateSlide(newIndex: number) {
-			slides[currentIndex]?.classList.remove('is-active');
-			currentIndex = (newIndex + totalSlides) % totalSlides;
-			slides[currentIndex]?.classList.add('is-active');
+		// Ensure all non-active slides are cleanly reset at start
+		slides.forEach((slide, idx) => {
+			if (idx === currentIndex) {
+				slide.classList.add('is-active');
+			} else {
+				slide.classList.remove('is-active');
+			}
+		});
+		numberEl.textContent = String(currentIndex + 1).padStart(2, '0');
 
-			const formattedNumber = String(currentIndex + 1).padStart(2, '0');
-			numberEl.textContent = formattedNumber;
+		function finalizeTransition(targetIndex: number) {
+			if (transitionTimeout) {
+				clearTimeout(transitionTimeout);
+				transitionTimeout = null;
+			}
+			currentIndex = targetIndex;
+			// Hard reset: ensure strictly only currentIndex has .is-active
+			slides.forEach((slide, idx) => {
+				if (idx === currentIndex) {
+					slide.classList.add('is-active');
+				} else {
+					slide.classList.remove('is-active');
+				}
+			});
+			numberEl!.textContent = String(currentIndex + 1).padStart(2, '0');
+			isTransitioning = false;
+		}
+
+		function navigateTo(targetIndex: number) {
+			// If already transitioning or navigating to current slide, ignore
+			if (isTransitioning) return;
+			const nextIndex = (targetIndex + totalSlides) % totalSlides;
+			if (nextIndex === currentIndex) return;
+
+			isTransitioning = true;
+			const previousSlide = slides[currentIndex];
+			const nextSlide = slides[nextIndex];
+
+			// Update counter immediately for responsive feedback
+			numberEl!.textContent = String(nextIndex + 1).padStart(2, '0');
+
+			// Transition out current slide, transition in next slide
+			previousSlide?.classList.remove('is-active');
+			nextSlide?.classList.add('is-active');
+
+			// Check for reduced motion
+			const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+			if (prefersReduced) {
+				finalizeTransition(nextIndex);
+				return;
+			}
+
+			// Fallback timeout guaranteeing state finalization even if transitionend is missed/interrupted
+			transitionTimeout = setTimeout(() => {
+				finalizeTransition(nextIndex);
+			}, 360);
+
+			let transitioned = false;
+			const onTransitionEnd = (e: TransitionEvent) => {
+				if (e.target !== nextSlide || e.propertyName !== 'opacity') return;
+				if (transitioned) return;
+				transitioned = true;
+				nextSlide.removeEventListener('transitionend', onTransitionEnd);
+				finalizeTransition(nextIndex);
+			};
+
+			nextSlide?.addEventListener('transitionend', onTransitionEnd);
 		}
 
 		function startAutoplay() {
@@ -212,7 +282,7 @@ const recommendations: Recommendation[] = [
 			const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 			if (!prefersReduced) {
 				autoplayTimer = setInterval(() => {
-					updateSlide(currentIndex + 1);
+					navigateTo(currentIndex + 1);
 				}, 7000);
 			}
 		}
@@ -229,13 +299,17 @@ const recommendations: Recommendation[] = [
 			startAutoplay();
 		}
 
-		prevBtn.addEventListener('click', () => {
-			updateSlide(currentIndex - 1);
+		prevBtn.addEventListener('click', (e) => {
+			e.preventDefault();
+			if (isTransitioning) return;
+			navigateTo(currentIndex - 1);
 			restartAutoplay();
 		});
 
-		nextBtn.addEventListener('click', () => {
-			updateSlide(currentIndex + 1);
+		nextBtn.addEventListener('click', (e) => {
+			e.preventDefault();
+			if (isTransitioning) return;
+			navigateTo(currentIndex + 1);
 			restartAutoplay();
 		});
 
@@ -244,6 +318,16 @@ const recommendations: Recommendation[] = [
 		container.addEventListener('mouseleave', startAutoplay);
 		container.addEventListener('focusin', stopAutoplay);
 		container.addEventListener('focusout', startAutoplay);
+
+		// Clean up on page navigation with ClientRouter / Astro View Transitions
+		document.addEventListener(
+			'astro:before-swap',
+			() => {
+				stopAutoplay();
+				if (transitionTimeout) clearTimeout(transitionTimeout);
+			},
+			{ once: true }
+		);
 
 		// Start autoplay on load
 		startAutoplay();
@@ -439,6 +523,7 @@ const recommendations: Recommendation[] = [
 		z-index: 10;
 	}
 
+	/* Navigation buttons: consistent prominent active appearance */
 	.nav-btn {
 		width: 44px;
 		height: 44px;
@@ -447,30 +532,15 @@ const recommendations: Recommendation[] = [
 		align-items: center;
 		justify-content: center;
 		background-color: transparent;
+		border: 1px solid rgba(255, 255, 255, 0.45);
+		color: #ffffff;
 		cursor: pointer;
 		transition: all 0.2s ease;
 		outline: none;
 		user-select: none;
 	}
 
-	/* Previous button subdued per screenshot */
-	.nav-btn-prev {
-		border: 1px solid rgba(255, 255, 255, 0.15);
-		color: #737373;
-	}
-
-	.nav-btn-prev:hover {
-		border-color: rgba(255, 255, 255, 0.4);
-		color: #ffffff;
-	}
-
-	/* Next button prominent per screenshot */
-	.nav-btn-next {
-		border: 1px solid rgba(255, 255, 255, 0.45);
-		color: #ffffff;
-	}
-
-	.nav-btn-next:hover {
+	.nav-btn:hover {
 		border-color: #ffffff;
 		background-color: rgba(255, 255, 255, 0.05);
 	}

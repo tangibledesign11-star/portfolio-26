@@ -196,9 +196,32 @@ const { class: className = '' } = Astro.props;
 	}
 
 	/* --------------------------------------------------
-	 * Mobile Responsive Layout
+	 * Tablet Layout (541px to 768px): Single line with good margins
 	 * -------------------------------------------------- */
-	@media (max-width: 768px) {
+	@media (max-width: 768px) and (min-width: 541px) {
+		.banner-container {
+			padding-left: 24px;
+			padding-right: 24px;
+		}
+
+		.banner-content {
+			gap: 12px;
+		}
+
+		.banner-text-desktop {
+			display: inline;
+			white-space: nowrap;
+		}
+
+		.banner-text-mobile {
+			display: none;
+		}
+	}
+
+	/* --------------------------------------------------
+	 * Mobile Responsive Layout (<= 540px): Balanced 2-line layout
+	 * -------------------------------------------------- */
+	@media (max-width: 540px) {
 		.banner-container {
 			padding-left: 12px;
 			padding-right: 12px;
